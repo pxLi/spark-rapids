@@ -19,7 +19,7 @@ spec:
       limits:
         nvidia.com/gpu: 1
     restartPolicy: Never
-    backoffLimit: 4
+    backoffLimit: 1
     tty: true
   nodeSelector:
     kubernetes.io/os: linux
@@ -30,10 +30,17 @@ spec:
             checkout scm
         }
         stage ('Build') {
-            container('cuda') {
-                sh "ls -l && nvidia-smi "
-                sh "ls /usr/local"
-                sh "mvn package -DskipTests"
+            parallel {
+                container('cuda101') {
+                    sh "ls -l && nvidia-smi "
+                    sh "ls /usr/local"
+                    sh "mvn package -DskipTests"
+                }
+                container('cuda101-new') {
+                    sh "ls -l && nvidia-smi "
+                    sh "ls /usr/local"
+                    sh "mvn package -DskipTests"
+                }
             }
         }
     }
