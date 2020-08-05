@@ -13,8 +13,8 @@ spec:
     restartPolicy: Never
     backoffLimit: 4
     tty: true
-  - name: cuda102
-    image: xgbci/rapids-plugin-build:ubuntu16-cuda10.2
+  - name: cuda101-new
+    image: xgbci/rapids-plugin-build:ubuntu16-cuda10.1-new
     resources:
       limits:
         nvidia.com/gpu: 1
