@@ -13,7 +13,7 @@ spec:
     image: xgbci/rapids-plugin-build:ubuntu16-cuda10.1
     resources:
       limits:
-        nvidia.com/gpu: 2
+        nvidia.com/gpu: 1
     restartPolicy: Never
     backoffLimit: 0
     tty: true
