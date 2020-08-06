@@ -30,9 +30,16 @@ spec:
     nvidia.com/driver_version: "450.37"
 ''') {
     node('peixin-test') {
-        timeout(time: 5, unit: "MINUTE") {
-            stage('Checkout src') {
-                checkout scm
+            stage('checkout src') {
+                parallel 101: {
+                    container('cuda100') {
+                        checkout scm
+                    }
+                }, 100 {
+                    container('cuda100') {
+                        checkout scm
+                    }
+                }
             }
             stage('Build') {
                 parallel 101: {
@@ -49,6 +56,5 @@ spec:
                     }
                 }
             }
-        }
     }
 }
