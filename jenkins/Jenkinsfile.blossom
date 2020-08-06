@@ -27,7 +27,7 @@ spec:
     tty: true
   nodeSelector:
     kubernetes.io/os: linux
-    nvidia.com/driver_version: "450.37"
+    # nvidia.com/driver_version: "450.37"
 ''') {
     node('peixin-test') {
         stage('checkout') {
