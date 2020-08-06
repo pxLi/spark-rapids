@@ -13,7 +13,7 @@ spec:
     image: xgbci/rapids-plugin-build:ubuntu16-cuda10.1
     resources:
       limits:
-        nvidia.com/gpu: 1
+        nvidia.com/gpu: 2
     restartPolicy: Never
     backoffLimit: 0
     tty: true
@@ -30,17 +30,17 @@ spec:
     nvidia.com/driver_version: "450.37"
 ''') {
     node('peixin-test') {
-        stage('checkout src') {
+        stage('checkout') {
             checkout scm
         }
-        stage('build') {
+        stage('build 101') {
             container('cuda101') {
                 sh "ls -l && nvidia-smi "
                 sh "ls /usr/local"
                 sh "mvn package -DskipTests"
             }
         }
-        stage('build_100') {
+        stage('build 100') {
             container('cuda100') {
                 sh "ls -l && nvidia-smi "
                 sh "ls /usr/local"
