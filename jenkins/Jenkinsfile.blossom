@@ -35,7 +35,7 @@ spec:
                 checkout scm
             }
         }
-        parallel 101: {
+        parallel {
             stage('build') {
                 container('cuda101') {
                     sh "ls -l && nvidia-smi "
@@ -43,7 +43,6 @@ spec:
                     sh "mvn package -DskipTests"
                 }
             }
-        }, 100 {
             stage('build_100') {
                 container('cuda100') {
                     sh "ls -l && nvidia-smi "
