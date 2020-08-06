@@ -1,6 +1,7 @@
 #!/usr/local/env groovy
 /*
 * PR test
+* 1
 */
 
 podTemplate (label: 'peixin-test', cloud:'sc-ipp-blossom-prod', yaml: '''
