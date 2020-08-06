@@ -30,26 +30,29 @@ spec:
     nvidia.com/driver_version: "450.37"
 ''') {
     node('peixin-test') {
-        stage('checkout src') {
-            container('cuda101') {
-                checkout scm
-            }
-        }
-        parallel {
-            stage('build') {
+        stages {
+            stage('checkout src') {
                 container('cuda101') {
-                    sh "ls -l && nvidia-smi "
-                    sh "ls /usr/local"
-                    sh "mvn package -DskipTests"
+                    checkout scm
                 }
             }
-            stage('build_100') {
-                container('cuda100') {
-                    sh "ls -l && nvidia-smi "
-                    sh "ls /usr/local"
-                    sh "mvn package -DskipTests"
-                }
-            }
+            parallel (
+                    101: stage('build') {
+                        container('cuda101') {
+                            sh "ls -l && nvidia-smi "
+                            sh "ls /usr/local"
+                            sh "mvn package -DskipTests"
+                        }
+                    },
+                    100: stage('build_100') {
+                        container('cuda100') {
+                            sh "ls -l && nvidia-smi "
+                            sh "ls /usr/local"
+                            sh "mvn package -DskipTests"
+                        }
+                    }
+            )
         }
+
     }
 }
