@@ -25,8 +25,59 @@
 
 def urmUrl="https://${ArtifactoryConstants.ARTIFACTORY_NAME}/artifactory/sw-spark-maven"
 
+def IMAGE_NAME="${ArtifactoryConstants.ARTIFACTORY_NAME}/sw-spark-docker/plugin:it-centos7-CUDA_NAME-blossom"
+
+def pluginIT="""
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: "plugin-it"
+    image: "IMAGE_NAME"
+    imagePullPolicy: "IfNotPresent"
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+    restartPolicy: Never
+    backoffLimit: 4
+    tty: true
+  nodeSelector:
+    kubernetes.io/os: linux
+"""
+
+def pluginDocker="""
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: plugin-docker
+    image: docker:19.03.1
+    command:
+    - sleep
+    args:
+    - 99d
+    env:
+      - name: DOCKER_HOST
+        value: tcp://localhost:2375
+  - name: plugin-docker-daemon
+    image: docker:19.03.1-dind
+    securityContext:
+      privileged: true
+    env:
+      - name: DOCKER_TLS_CERTDIR
+        value: ""
+
+  nodeSelector:
+    kubernetes.io/os: linux
+"""
+
 pipeline {
-    agent none
+    agent {
+        kubernetes {
+            label 'plugin-any'
+            cloud 'sc-ipp-blossom-prod'
+        }
+    }
 
     options {
         ansiColor('xterm')
@@ -38,8 +89,6 @@ pipeline {
     parameters {
         string(name: 'OVERWRITE_PARAMS', defaultValue: '',
             description: 'parameters format XXX_VER=xxx;YYY_VER=yyy;')
-        string(name: 'CUDA_CLASSIFIER', defaultValue: 'cuda10-1',
-            description: '-Dclassifier=\n\n cuda10-1, cuda10-2, EMPTY as cuda10-1')
         string(name: 'REF', defaultValue: 'branch-0.2', description: 'Commit to build')
     }
 
@@ -54,29 +103,52 @@ pipeline {
     }
 
     stages {
-        stage('centos7 CUDA10.1') {
-            agent { label 'docker-gpu' }
+        stage('Update docker image') {
+            agent {
+                kubernetes {
+                    label 'plugin-docker'
+                    cloud 'sc-ipp-blossom-prod'
+                    yaml "${pluginDocker}"
+                }
+            }
             steps {
                 script {
-                    def CUDA_NAME=sh(returnStdout: true,
-                        script: '. jenkins/version-def.sh>&2 && echo -n $CUDA_CLASSIFIER | sed "s/-/./g"')
-                    def IMAGE_NAME="$ARTIFACTORY_NAME/sw-spark-docker/plugin:it-centos7-$CUDA_NAME"
-                    def CUDA_VER="$CUDA_NAME" - "cuda"
-                    sh "docker pull $IMAGE_NAME"
-                    def urmImageID=sh(returnStdout: true, script: "docker inspect -f {{'.Id'}} $IMAGE_NAME")
-                    // Speed up Docker building via '--cache-from $IMAGE_NAME'
-                    def buildImage=docker.build(IMAGE_NAME,
-                        "-f jenkins/Dockerfile.integration.centos7 --build-arg CUDA_VER=$CUDA_VER \
-                            --build-arg URM_URL=$URM_URL --cache-from $IMAGE_NAME -t $IMAGE_NAME .")
-                    def buildImageID=sh(returnStdout: true, script: "docker inspect -f {{'.Id'}} $IMAGE_NAME")
-                    if (! buildImageID.equals(urmImageID)) {
-                        echo "Dockerfile updated, upload docker image to URM"
-                        uploadDocker(IMAGE_NAME)
+                    container('plugin-docker') {
+                        def CUDA_NAME=sh(returnStdout: true,
+                            script: '. jenkins/version-def.sh>&2 && echo -n $CUDA_CLASSIFIER | sed "s/-/./g"')
+                        IMAGE_NAME=IMAGE_NAME.replace("CUDA_NAME", "$CUDA_NAME")
+                        def CUDA_VER="$CUDA_NAME" - "cuda"
+                        sh "docker pull $IMAGE_NAME || true"
+                        def urmImageID=sh(returnStdout: true, script: "docker inspect -f {{'.Id'}} $IMAGE_NAME")
+                        // Speed up Docker building via '--cache-from $IMAGE_NAME'
+                        def buildImage=docker.build(IMAGE_NAME,
+                            "-f jenkins/Dockerfile.integration.centos7 --build-arg CUDA_VER=$CUDA_VER \
+                                --build-arg URM_URL=$URM_URL --cache-from $IMAGE_NAME -t $IMAGE_NAME .")
+                        def buildImageID=sh(returnStdout: true, script: "docker inspect -f {{'.Id'}} $IMAGE_NAME")
+                        if (! buildImageID.equals(urmImageID)) {
+                            echo "Dockerfile updated, upload docker image to URM"
+                            uploadDocker(IMAGE_NAME)
+                        }
+                        // Prepare pluginIT yaml
+                        pluginIT=pluginIT.replace("IMAGE_NAME", "$IMAGE_NAME")
+                        println(pluginIT)
                     }
-
-                    buildImage.inside("--runtime=nvidia -v ${HOME}/.zinc:${HOME}/.zinc:rw") {
-                        echo "Running integration tests on centos7 $CUDA_NAME"
-                        sh "bash $TEST_SCRIPT"
+                }
+            }
+        }
+        stage('IT on centos7 CUDA10.1') {
+            agent {
+                kubernetes {
+                    label 'plugin-it'
+                    cloud 'sc-ipp-blossom-prod'
+                    yaml "${pluginIT}"
+                }
+            }
+            steps {
+                script {
+                    container('plugin-it') {
+                        echo "Running integration tests on centos7"
+                        sh "$TEST_SCRIPT"
                     }
                 }
             }
@@ -109,6 +181,7 @@ void uploadDocker(String IMAGE_NAME) {
 }
 
 void slack(Map params = [:], String channel, String message) {
+/*
     Map defaultParams = [
             color: "#000000",
             baseUrl: "${SparkConstants.SLACK_API_ENDPOINT}",
@@ -119,4 +192,5 @@ void slack(Map params = [:], String channel, String message) {
     params["message"] = "${BUILD_URL}\n" + message
 
     slackSend(defaultParams << params)
+*/
 }

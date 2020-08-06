@@ -20,12 +20,64 @@
 * Jenkinsfile for building rapids-plugin
 *
 */
+
 @Library('shared-libs') _
 
 def urmUrl="https://${ArtifactoryConstants.ARTIFACTORY_NAME}/artifactory/sw-spark-maven"
 
+def IMAGE_NAME="${ArtifactoryConstants.ARTIFACTORY_NAME}/sw-spark-docker/plugin:dev-ubuntu16-CUDA_NAME-blossom"
+
+def pluginDev="""
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: plugin-dev
+    image: IMAGE_PREMERGE
+    imagePullPolicy: Always
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+    restartPolicy: Never
+    backoffLimit: 4
+    tty: true
+  nodeSelector:
+    kubernetes.io/os: linux
+"""
+
+def pluginDocker="""
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: plugin-docker
+    image: docker:19.03.1
+    command:
+    - sleep
+    args:
+    - 99d
+    env:
+      - name: DOCKER_HOST
+        value: tcp://localhost:2375
+  - name: plugin-docker-daemon
+    image: docker:19.03.1-dind
+    securityContext:
+      privileged: true
+    env:
+      - name: DOCKER_TLS_CERTDIR
+        value: ""
+
+  nodeSelector:
+    kubernetes.io/os: linux
+"""
+
 pipeline {
-    agent { label 'vanilla' }
+    agent {
+        kubernetes {
+            label 'plugin-any'
+            cloud 'sc-ipp-blossom-prod'
+        }
+    }
 
     options {
         ansiColor('xterm')
@@ -39,16 +91,24 @@ pipeline {
 
     environment {
         JENKINS_ROOT  = 'jenkins'
-        BUILD_SCRIPT = '$JENKINS_ROOT/spark-premerge-build.sh'
+        PREMERGE_SCRIPT = '$JENKINS_ROOT/spark-premerge-build.sh'
         MVN_URM_MIRROR='-s jenkins/settings.xml -P mirror-apache-to-urm'
         LIBCUDF_KERNEL_CACHE_PATH='/tmp/.cudf'
+        URM_CREDS = credentials("svcngcc_artifactory")
         ARTIFACTORY_NAME = "${ArtifactoryConstants.ARTIFACTORY_NAME}"
         URM_URL = "${urmUrl}"
     }
 
     stages {
-        stage('Ubuntu16 CUDA10.1') {
-            agent { label 'docker-gpu' }
+        stage('Build docker image') {
+            agent {
+                kubernetes {
+                    label 'plugin-docker'
+                    cloud 'sc-ipp-blossom-prod'
+                    yaml "$pluginDocker"
+                }
+            }
+
             steps {
                 script {
                     //Check if a PR has been committed using git signoff
@@ -56,21 +116,52 @@ pipeline {
                         error "Signed-off-by check FAILED"
                     }
 
-                    def CUDA_NAME=sh(returnStdout: true,
-                        script: '. jenkins/version-def.sh>&2 && echo -n $CUDA_CLASSIFIER | sed "s/-/./g"')
-                    def IMAGE_NAME="$ARTIFACTORY_NAME/sw-spark-docker/plugin:dev-ubuntu16-$CUDA_NAME"
-                    sh "docker pull $IMAGE_NAME"
-                    def CUDA_VER="$CUDA_NAME" - "cuda"
-                    def buildImage=docker.build(IMAGE_NAME,
-                        "-f jenkins/Dockerfile.ubuntu16 --build-arg CUDA_VER=$CUDA_VER --cache-from $IMAGE_NAME -t $IMAGE_NAME .")
-                    buildImage.inside("--runtime=nvidia -v ${HOME}/.m2:${HOME}/.m2:rw -v ${HOME}/.zinc:${HOME}/.zinc:rw") {
-                        sh "bash $BUILD_SCRIPT"
-                        step([$class: 'JacocoPublisher',
-                              execPattern: '**/target/jacoco.exec',
-                              classPattern: 'target/jacoco_classes/',
-                              sourcePattern: 'sql-plugin/src/main/java/,sql-plugin/src/main/scala/,shuffle-plugin/src/main/scala/',
-                              sourceInclusionPattern: '**/*.java,**/*.scala'
-                        ])
+                    container('plugin-docker') {
+                        def CUDA_NAME=sh(returnStdout: true,
+                            script: '. jenkins/version-def.sh>&2 && echo -n $CUDA_CLASSIFIER | sed "s/-/./g"')
+                        def CUDA_VER="$CUDA_NAME" - "cuda"
+                        IMAGE_NAME=IMAGE_NAME.replace("CUDA_NAME", "$CUDA_NAME")
+                        sh "docker pull $IMAGE_NAME || true"
+                        def urmImageID=sh(returnStdout: true, script: "docker inspect -f {{'.Id'}} $IMAGE_NAME")
+                        // Speed up Docker building via '--cache-from $IMAGE_NAME'
+                        def buildImage=docker.build(IMAGE_NAME,
+                            "-f jenkins/Dockerfile.ubuntu16 --build-arg CUDA_VER=$CUDA_VER --cache-from $IMAGE_NAME -t $IMAGE_NAME .")
+                        def buildImageID=sh(returnStdout: true, script: "docker inspect -f {{'.Id'}} $IMAGE_NAME")
+                        // Prepare pluginDev yaml
+                        def IMAGE_PREMERGE=IMAGE_NAME
+                        if (! buildImageID.equals(urmImageID)) {
+                            echo "Dockerfile updated, upload premerge docker image to URM"
+                            IMAGE_PREMERGE=IMAGE_NAME + "-premerge"
+                            sh "docker tag $IMAGE_NAME $IMAGE_PREMERGE"
+                            uploadDocker(IMAGE_PREMERGE)
+                        }
+
+                        pluginDev=pluginDev.replace("IMAGE_PREMERGE", "$IMAGE_PREMERGE")
+                        println(pluginDev)
+                    }
+                }
+            }
+        }
+        stage('Build on Ubuntu16 CUDA10.1') {
+            agent {
+                kubernetes {
+                    label 'plugin-dev'
+                    cloud 'sc-ipp-blossom-prod'
+                    yaml "$pluginDev"
+                }
+            }
+
+            steps {
+                script {
+                    container('plugin-dev') {
+                        sh "$PREMERGE_SCRIPT || true"
+                        sh "$WORKSPACE/jenkins/log.sh premerge || true"
+//                        step([$class: 'JacocoPublisher',
+//                              execPattern: '**/target/jacoco.exec',
+//                              classPattern: 'target/jacoco_classes/',
+//                              sourcePattern: 'sql-plugin/src/main/java/,sql-plugin/src/main/scala/,shuffle-plugin/src/main/scala/',
+//                              sourceInclusionPattern: '**/*.java,**/*.scala'
+//                        ])
                     }
                 }
             }
@@ -79,6 +170,7 @@ pipeline {
 } // end of pipeline
 
 boolean isSignedOff() {
+/*
     def target_rev = sh(returnStdout: true,
             script: "git rev-parse refs/remotes/origin/${ghprbTargetBranch}").trim()
     def revs_arr = sh(returnStdout: true,
@@ -97,4 +189,14 @@ boolean isSignedOff() {
     }
 
     return signed_off
+*/ return true
+}
+
+void uploadDocker(String IMAGE_NAME) {
+    def DOCKER_CMD="docker --config $WORKSPACE/.docker"
+    sh """
+        echo $URM_CREDS_PSW | $DOCKER_CMD login $ARTIFACTORY_NAME -u $URM_CREDS_USR --password-stdin
+        $DOCKER_CMD push $IMAGE_NAME
+        $DOCKER_CMD logout $ARTIFACTORY_NAME
+    """
 }
