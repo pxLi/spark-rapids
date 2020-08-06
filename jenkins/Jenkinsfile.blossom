@@ -17,14 +17,14 @@ spec:
     restartPolicy: Never
     backoffLimit: 1
     tty: true
-#  - name: cuda101-new
-#    image: xgbci/rapids-plugin-build:ubuntu16-cuda10.1-new
-#    resources:
-#      limits:
-#        nvidia.com/gpu: 1
-#    restartPolicy: Never
-#    backoffLimit: 1
-#    tty: true
+  - name: cuda100
+    image: xgbci/rapids-plugin-build:ubuntu16-cuda10.0
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+    restartPolicy: Never
+    backoffLimit: 1
+    tty: true
   nodeSelector:
     kubernetes.io/os: linux
     nvidia.com/driver_version: "450.37"
@@ -35,6 +35,13 @@ spec:
         }
         stage ('Build') {
             container('cuda101') {
+                sh "ls -l && nvidia-smi "
+                sh "ls /usr/local"
+                sh "mvn package -DskipTests"
+            }
+        }
+        stage ('Build') {
+            container('cuda100') {
                 sh "ls -l && nvidia-smi "
                 sh "ls /usr/local"
                 sh "mvn package -DskipTests"
