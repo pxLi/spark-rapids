@@ -15,7 +15,15 @@ spec:
       limits:
         nvidia.com/gpu: 1
     restartPolicy: Never
-    backoffLimit: 1
+    backoffLimit: 0
+    tty: true
+  - name: cuda100
+    image: xgbci/rapids-plugin-build:ubuntu16-cuda10.0
+    #resources:
+    #  limits:
+    #    nvidia.com/gpu: 1
+    restartPolicy: Never
+    backoffLimit: 0
     tty: true
   nodeSelector:
     kubernetes.io/os: linux
