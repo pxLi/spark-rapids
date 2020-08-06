@@ -31,9 +31,7 @@ spec:
 ''') {
     node('peixin-test') {
         stage('checkout src') {
-            container('cuda101') {
-                checkout scm
-            }
+            checkout scm
         }
         stage('build') {
             container('cuda101') {
