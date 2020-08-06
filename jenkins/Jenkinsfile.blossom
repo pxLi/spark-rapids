@@ -42,5 +42,12 @@ spec:
                 sh "mvn package -DskipTests"
             }
         }
+        stage('build') {
+            container('cuda100') {
+                sh "ls -l && nvidia-smi "
+                sh "ls /usr/local"
+                sh "mvn package -DskipTests"
+            }
+        }
     }
 }
