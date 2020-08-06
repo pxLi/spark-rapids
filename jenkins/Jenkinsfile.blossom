@@ -17,44 +17,22 @@ spec:
     restartPolicy: Never
     backoffLimit: 1
     tty: true
-  - name: cuda100
-    image: xgbci/rapids-plugin-build:ubuntu16-cuda10.0
-    resources:
-      limits:
-        nvidia.com/gpu: 1
-    restartPolicy: Never
-    backoffLimit: 1
-    tty: true
   nodeSelector:
     kubernetes.io/os: linux
     nvidia.com/driver_version: "450.37"
 ''') {
     node('peixin-test') {
-            stage('checkout src') {
-                parallel 101: {
-                    container('cuda100') {
-                        checkout scm
-                    }
-                }, 100 {
-                    container('cuda100') {
-                        checkout scm
-                    }
-                }
+        stage('checkout src') {
+            container('cuda101') {
+                checkout scm
             }
-            stage('Build') {
-                parallel 101: {
-                    container('cuda101') {
-                        sh "ls -l && nvidia-smi "
-                        sh "ls /usr/local"
-                        sh "mvn package -DskipTests"
-                    }
-                }, 100 {
-                    container('cuda100') {
-                        sh "ls -l && nvidia-smi "
-                        sh "ls /usr/local"
-                        sh "mvn package -DskipTests"
-                    }
-                }
+        }
+        stage('build') {
+            container('cuda101') {
+                sh "ls -l && nvidia-smi "
+                sh "ls /usr/local"
+                sh "mvn package -DskipTests"
             }
+        }
     }
 }
