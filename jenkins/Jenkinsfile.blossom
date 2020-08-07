@@ -13,20 +13,12 @@ spec:
     restartPolicy: Never
     backoffLimit: 1
     tty: true
-#  - name: cuda101-new
-#    image: xgbci/rapids-plugin-build:ubuntu16-cuda10.1-new
-#    resources:
-#      limits:
-#        nvidia.com/gpu: 1
-#    restartPolicy: Never
-#    backoffLimit: 1
-#    tty: true
   nodeSelector:
     kubernetes.io/os: linux
     nvidia.com/driver_version: "450.37"
 ''') {
     node('peixin-test') {
-        stage ('Checkout src') {
+        stage ('checkout') {
             checkout scm
         }
         stage ('Build') {
