@@ -36,7 +36,7 @@ spec:
     image: IMAGE_PREMERGE
     imagePullPolicy: Always
     resources:
-      request:
+      requests:
         cpu: 2
         mem: 4Gi
       limits:
