@@ -38,7 +38,7 @@ spec:
     resources:
       requests:
         cpu: 2
-        mem: 4Gi
+        memory: 4Gi
       limits:
         nvidia.com/gpu: 1
     restartPolicy: Never
@@ -168,25 +168,25 @@ pipeline {
                         }
                     }
                 }
-//                stage('Build on Ubuntu16 CUDA10.1-2') {
-//                    agent {
-//                        kubernetes {
-//                            label 'plugin-dev2'
-//                            cloud 'sc-ipp-blossom-prod'
-//                            yaml "$pluginDev"
-//                        }
-//                    }
-//
-//                    steps {
-//                        script {
-//                            container('plugin-dev') {
-////                            sh "$PREMERGE_SCRIPT || true"
-//                                sh "nvidia-smi || true"
-//                                sh "$WORKSPACE/jenkins/log.sh premerge || true"
-//                            }
-//                        }
-//                    }
-//                }
+                stage('Build on Ubuntu16 CUDA10.1-2') {
+                    agent {
+                        kubernetes {
+                            label 'plugin-dev2'
+                            cloud 'sc-ipp-blossom-prod'
+                            yaml "$pluginDev"
+                        }
+                    }
+
+                    steps {
+                        script {
+                            container('plugin-dev') {
+//                            sh "$PREMERGE_SCRIPT || true"
+                                sh "nvidia-smi || true"
+                                sh "$WORKSPACE/jenkins/log.sh premerge || true"
+                            }
+                        }
+                    }
+                }
             }
         }
     } // end of stages
