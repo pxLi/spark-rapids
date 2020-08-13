@@ -146,46 +146,49 @@ pipeline {
                 }
             }
         }
-        parallel {
-            stage('Build on Ubuntu16 CUDA10.1-1') {
-                agent {
-                    kubernetes {
-                        label 'plugin-dev1'
-                        cloud 'sc-ipp-blossom-prod'
-                        yaml "$pluginDev"
+        stage('Parallel Stages') {
+            failFast true
+            parallel {
+                stage('Build on Ubuntu16 CUDA10.1-1') {
+                    agent {
+                        kubernetes {
+                            label 'plugin-dev1'
+                            cloud 'sc-ipp-blossom-prod'
+                            yaml "$pluginDev"
+                        }
                     }
-                }
 
-                steps {
-                    script {
-                        container('plugin-dev') {
-                            sh "$PREMERGE_SCRIPT || true"
-                            sh "$WORKSPACE/jenkins/log.sh premerge || true"
+                    steps {
+                        script {
+                            container('plugin-dev') {
+//                            sh "$PREMERGE_SCRIPT || true"
+                                sh "nvidia-smi || true"
+                                sh "$WORKSPACE/jenkins/log.sh premerge || true"
+                            }
                         }
                     }
                 }
-            }
-            stage('Build on Ubuntu16 CUDA10.1-2') {
-                agent {
-                    kubernetes {
-                        label 'plugin-dev2'
-                        cloud 'sc-ipp-blossom-prod'
-                        yaml "$pluginDev"
+                stage('Build on Ubuntu16 CUDA10.1-2') {
+                    agent {
+                        kubernetes {
+                            label 'plugin-dev2'
+                            cloud 'sc-ipp-blossom-prod'
+                            yaml "$pluginDev"
+                        }
                     }
-                }
 
-                steps {
-                    script {
-                        container('plugin-dev') {
+                    steps {
+                        script {
+                            container('plugin-dev') {
 //                            sh "$PREMERGE_SCRIPT || true"
-                            sh "nvidia-smi || true"
-                            sh "$WORKSPACE/jenkins/log.sh premerge || true"
+                                sh "nvidia-smi || true"
+                                sh "$WORKSPACE/jenkins/log.sh premerge || true"
+                            }
                         }
                     }
                 }
             }
         }
-
     } // end of stages
 } // end of pipeline
 
