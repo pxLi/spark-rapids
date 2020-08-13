@@ -36,6 +36,9 @@ spec:
     image: IMAGE_PREMERGE
     imagePullPolicy: Always
     resources:
+      request:
+        cpu: 2
+        mem: 4Gi
       limits:
         nvidia.com/gpu: 1
     restartPolicy: Never
@@ -129,12 +132,12 @@ pipeline {
                         def buildImageID=sh(returnStdout: true, script: "docker inspect -f {{'.Id'}} $IMAGE_NAME")
                         // Prepare pluginDev yaml
                         def IMAGE_PREMERGE=IMAGE_NAME
-                        if (! buildImageID.equals(urmImageID)) {
-                            echo "Dockerfile updated, upload premerge docker image to URM"
-                            IMAGE_PREMERGE=IMAGE_NAME + "-premerge"
-                            sh "docker tag $IMAGE_NAME $IMAGE_PREMERGE"
-                            uploadDocker(IMAGE_PREMERGE)
-                        }
+//                        if (! buildImageID.equals(urmImageID)) {
+//                            echo "Dockerfile updated, upload premerge docker image to URM"
+//                            IMAGE_PREMERGE=IMAGE_NAME + "-premerge"
+//                            sh "docker tag $IMAGE_NAME $IMAGE_PREMERGE"
+//                            uploadDocker(IMAGE_PREMERGE)
+//                        }
 
                         pluginDev=pluginDev.replace("IMAGE_PREMERGE", "$IMAGE_PREMERGE")
                         println(pluginDev)
