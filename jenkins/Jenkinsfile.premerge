@@ -45,6 +45,7 @@ spec:
     backoffLimit: 4
     tty: true
   nodeSelector:
+    nvidia.com/gpu_type: TITAN_V
     kubernetes.io/os: linux
 """
 
