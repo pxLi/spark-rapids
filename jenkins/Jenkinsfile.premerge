@@ -86,6 +86,7 @@ pipeline {
         ansiColor('xterm')
         timeout(time: 120, unit: 'MINUTES')
         buildDiscarder(logRotator(numToKeepStr: '10'))
+        parallelsAlwaysFailFast()
     }
 
     parameters {
@@ -145,30 +146,46 @@ pipeline {
                 }
             }
         }
-        stage('Build on Ubuntu16 CUDA10.1') {
-            agent {
-                kubernetes {
-                    label 'plugin-dev'
-                    cloud 'sc-ipp-blossom-prod'
-                    yaml "$pluginDev"
+        parallel {
+            stage('Build on Ubuntu16 CUDA10.1-1') {
+                agent {
+                    kubernetes {
+                        label 'plugin-dev1'
+                        cloud 'sc-ipp-blossom-prod'
+                        yaml "$pluginDev"
+                    }
+                }
+
+                steps {
+                    script {
+                        container('plugin-dev') {
+                            sh "$PREMERGE_SCRIPT || true"
+                            sh "$WORKSPACE/jenkins/log.sh premerge || true"
+                        }
+                    }
                 }
             }
+            stage('Build on Ubuntu16 CUDA10.1-2') {
+                agent {
+                    kubernetes {
+                        label 'plugin-dev2'
+                        cloud 'sc-ipp-blossom-prod'
+                        yaml "$pluginDev"
+                    }
+                }
 
-            steps {
-                script {
-                    container('plugin-dev') {
-                        sh "$PREMERGE_SCRIPT || true"
-                        sh "$WORKSPACE/jenkins/log.sh premerge || true"
-//                        step([$class: 'JacocoPublisher',
-//                              execPattern: '**/target/jacoco.exec',
-//                              classPattern: 'target/jacoco_classes/',
-//                              sourcePattern: 'sql-plugin/src/main/java/,sql-plugin/src/main/scala/,shuffle-plugin/src/main/scala/',
-//                              sourceInclusionPattern: '**/*.java,**/*.scala'
-//                        ])
+                steps {
+                    script {
+                        container('plugin-dev') {
+//                            sh "$PREMERGE_SCRIPT || true"
+                            sh "nvidia-smi || true"
+                            sh "$WORKSPACE/jenkins/log.sh premerge || true"
+                        }
                     }
                 }
             }
         }
+
     } // end of stages
 } // end of pipeline
 
