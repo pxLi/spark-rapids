@@ -182,7 +182,7 @@ pipeline {
                     }
                 }
                 stages {
-                    stage("UT-${GPU_TYPE}-${SPARK_TEST_VERSION}") {
+                    stage("UT") {
                         steps {
                             script {
                                 container('plugin-dev') {
