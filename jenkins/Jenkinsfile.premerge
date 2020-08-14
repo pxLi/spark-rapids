@@ -79,7 +79,7 @@ spec:
 pipeline {
     agent {
         kubernetes {
-            label 'plugin-any'
+            label 'plugin-init'
             cloud 'sc-ipp-blossom-prod'
         }
     }
