@@ -176,9 +176,9 @@ pipeline {
                 }
                 agent {
                     kubernetes {
-                        label 'plugin-dev-${GPU_TYPE}-${SPARK_TEST_VERSION}'
+                        label "plugin-dev-${GPU_TYPE}-${SPARK_TEST_VERSION}"
                         cloud 'sc-ipp-blossom-prod'
-                        yaml  pluginDev.replace("GPU_TYPE", "${GPU_TYPE}")
+                        yaml  pluginDev.replace('GPU_TYPE', "${GPU_TYPE}")
                     }
                 }
                 stages {
