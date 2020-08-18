@@ -24,4 +24,4 @@ jobs:
         GH_REPO: spark-rapids
         GH_HEAD: branch-0.2
         GH_BASE: branch-0.3
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
