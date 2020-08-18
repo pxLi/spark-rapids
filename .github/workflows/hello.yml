@@ -6,27 +6,22 @@ name: Hello World
 # events but only for the branch-0.2 branch
 on:
   schedule:
-  - cron: '*/2 * * * *'
+  - cron: '*/10 * * * *'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  automerge:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-
-    # Runs a single command using the runners shell
-    - name: Run a one-line script
-      run: echo Hello, world!
-
-    # Runs a set of commands using the runners shell
-    - name: Run a multi-line script
-      run: |
-        echo Add other actions to build,
-        echo test, and deploy your project.
-
+    - name: Process bug issues
+      uses: docker://pxli/automerge:latest
+      env:
+        GH_OWNER: pxLi
+        GH_REPO: spark-rapids
+        GH_HEAD: branch-0.2
+        GH_BASE: branch-0.3
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
