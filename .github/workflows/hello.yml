@@ -6,7 +6,7 @@ name: Auto Merge
 # events but only for the branch-0.2 branch
 on:
   schedule:
-  - cron: '*/5 * * * *'
+  - cron: '*/10 * * * *'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
