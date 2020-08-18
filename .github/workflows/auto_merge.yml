@@ -1,6 +1,6 @@
-# 0.222 This is a basic workflow to help you get started with Actions
+# 0.2222 This is a basic workflow to help you get started with Actions
 
-name: Auto Merge
+name: auto-merge 
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the branch-0.2 branch
@@ -17,11 +17,11 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - name: Process bug issues
+    - name: auto-merge job
       uses: docker://pxli/automerge:latest
       env:
-        GH_OWNER: pxLi
-        GH_REPO: spark-rapids
-        GH_HEAD: branch-0.2
-        GH_BASE: branch-0.3
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        OWNER: pxLi
+        REPO_NAME: spark-rapids
+        HEAD: branch-0.2
+        BASE: branch-0.3
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
