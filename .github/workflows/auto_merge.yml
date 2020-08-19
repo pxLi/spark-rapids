@@ -18,9 +18,11 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - name: auto-merge job
-      if: ${{ github.ref == 'branch-0.2' }}
-      uses: docker://pxli/automerge:latest
+      #if: ${{ github.ref == 'branch-0.2' }}
+      #uses: docker://pxli/automerge:latest
+      run: echo "$REF"
       env:
+        REF: ${{ github.ref }} 
         OWNER: pxLi
         REPO_NAME: spark-rapids
         HEAD: branch-0.2
