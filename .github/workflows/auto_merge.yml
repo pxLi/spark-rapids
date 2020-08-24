@@ -4,9 +4,17 @@ name: auto-merge
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the branch-0.2 branch
+# on:
+#   schedule:
+#   - cron: '*/10 * * * *' # every 2 hours
+
 on:
-  schedule:
-  - cron: '0 */2 * * *' # every 2 hours
+  push:
+    branches:
+    - branch-0.2
+  pull_request:
+    branches:
+    - branch-0.2
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
