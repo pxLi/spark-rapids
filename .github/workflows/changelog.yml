@@ -30,7 +30,7 @@ jobs:
       - name: Update CHANGELOG.md
         id: upt
         #run: echo "::set-output name=stdout::$(.github/workflows/changelog/changelog --base_refs=branch-0.1,branch-0.2,branch-0.3)"
-        if: ${{ github.ref == 'refs/heads/branch-0.2' && github.event.pull_request.merged == true }}
+        if: github.ref == 'refs/heads/branch-0.2' && github.event.pull_request.merged == true
         uses: ./.github/workflows/changelog
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
@@ -41,7 +41,7 @@ jobs:
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
       - name: Create PR
-        if: ${{ github.ref == 'refs/heads/branch-0.2' && github.event.pull_request.merged == true }}
+        if: github.ref == 'refs/heads/branch-0.2' && github.event.pull_request.merged == true
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.PAT }}
