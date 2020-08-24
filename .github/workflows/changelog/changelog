@@ -170,6 +170,8 @@ def process_changelog(resource_type: str):
         if resource_type == ISSUES and category == INVALID:
             continue
         if resource_type == PULL_REQUESTS:
+            if item['title'].endswith('[bot]'):  # skip auto-gen PR
+                continue
             category = PRS
 
         changelog[project][category].append({
