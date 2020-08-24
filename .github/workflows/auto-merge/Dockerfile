@@ -12,18 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Make your change to the automerge script/Dockerfile
-## ...
-# Build your image locally
-## docker build -t pxli/automerge:latest -t pxli/automerge:<version_no> .
-# Test your built image locally
-## docker run --rm -it pxli/automerge:<version_no>
-# Submit a PR for review
-## ...
-# After the PR got merged
-# NOTE: You may need to ask pxLi(pxli@nyu.edu) for write access to the docker repo
-## docker push pxli/automerge:<version_no>
-
 FROM python:alpine
 
 WORKDIR /
