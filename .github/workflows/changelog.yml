@@ -27,7 +27,9 @@ jobs:
 
       - name: Update CHANGELOG.md
         id: upt
-        run: echo "::set-output name=stdout::$(.github/workflows/changelog/changelog --base_refs=branch-0.1,branch-0.2,branch-0.3)"
+        #run: echo "::set-output name=stdout::$(.github/workflows/changelog/changelog --base_refs=branch-0.1,branch-0.2,branch-0.3)"
+        if: ${{ github.ref == 'refs/heads/branch-0.2' }}
+        uses: docker://pxli/changelog:latest          
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
