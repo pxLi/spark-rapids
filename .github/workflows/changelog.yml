@@ -35,9 +35,11 @@ jobs:
 
       - name: Get date
         id: dt
+        if: ${{ success() }}
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
       - name: Create PR
+        if: ${{ success() }}
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.PAT }}
