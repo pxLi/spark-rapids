@@ -54,7 +54,7 @@ jobs:
           body: |
             changelog-gen runs on ${{ steps.dt.outputs.date }}
 
-            check script stdout: [job_run_${{ github.run_id }}](https://github.com/pxLi/spark-rapids/actions/runs/${{ github.run_number }})
+            check script stdout: [job_run_${{ github.run_id }}](https://github.com/pxLi/spark-rapids/actions/runs/${{ github.run_id }})
 
             Please review the generated CHANGELOG.md, then merge or close the PR and feel free to **delete** the remote branch.
           labels: |
