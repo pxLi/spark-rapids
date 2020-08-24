@@ -1,0 +1,63 @@
+# Copyright (c) 2020, NVIDIA CORPORATION.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# A workflow to create PR to update CHANGELOG nightly
+name: CHANGELOG generation nightly
+
+on:
+  schedule:
+  - cron: '*/5 * * * *' # nightly
+
+jobs:
+  changelog-gen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Update CHANGELOG.md
+        id: upt
+        run: echo "::set-output name=stdout::$(.github/workflows/changelog/changelog --base_refs=branch-0.1,branch-0.2,branch-0.3)"
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+
+      - name: Get date
+        id: dt
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.PAT }}
+          commit-message: "changelog-gen ${{ steps.dt.outputs.date }}"
+          committer: Peixin Li <pxli@nyu.edu>
+          author: Peixin Li <pxli@nyu.edu>
+          signoff: true
+          branch: changelog-night-update
+          title: '[DOC] Changelog update ${{ steps.dt.outputs.date }}'
+          body: |
+            changelog-gen runs on ${{ steps.dt.outputs.date }}
+
+            script run:
+            ```bash
+            ${{ steps.upt.outputs.stdout }}
+            ```
+
+            Please review newest CHANGELOG.md, then merge or close the PR.
+          labels: |
+            documentation
+          reviewers: pxLi
+          team-reviewers: |
+            owners
+            maintainers
+          draft: false
