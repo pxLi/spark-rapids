@@ -51,13 +51,9 @@ jobs:
           title: '[DOC] Changelog update ${{ steps.dt.outputs.date }} [bot]'
           body: |
             changelog-gen runs on ${{ steps.dt.outputs.date }}
+            check script stdout: [job_${{ github.run_id }}](https://github.com/pxLi/spark-rapids/runs/${{ github.run_id }}?check_suite_focus=true#step:3:1)
 
-            script run:
-            ```bash
-            ${{ steps.upt.outputs.stdout }}
-            ```
-
-            Please review newest CHANGELOG.md, then merge or close the PR.
+            Please review the generated CHANGELOG.md, then merge or close the PR and feel free to **delete** the remote branch.
           labels: |
             documentation
           reviewers: pxLi
