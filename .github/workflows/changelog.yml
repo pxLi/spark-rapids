@@ -49,7 +49,7 @@ jobs:
           author: Peixin Li <pxli@nyu.edu>
           signoff: true
           branch: changelog-night-update
-          title: '[DOC] Changelog update ${{ steps.dt.outputs.date }}'
+          title: '[DOC] Changelog update ${{ steps.dt.outputs.date }} [bot]'
           body: |
             changelog-gen runs on ${{ steps.dt.outputs.date }}
 
