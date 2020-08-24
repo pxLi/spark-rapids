@@ -48,7 +48,7 @@ jobs:
           author: Peixin Li <pxli@nyu.edu>
           signoff: true
           branch: changelog-night-update
-          title: '[DOC] Changelog update ${{ steps.dt.outputs.date }} [bot]'
+          title: '[DOC] Changelog update ${{ steps.dt.outputs.date }} [skip ci] [bot]'
           body: |
             changelog-gen runs on ${{ steps.dt.outputs.date }}
             check script stdout: [job_${{ github.run_id }}](https://github.com/pxLi/spark-rapids/runs/${{ github.run_id }}?check_suite_focus=true#step:3:1)
