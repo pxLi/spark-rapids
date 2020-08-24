@@ -34,7 +34,7 @@ jobs:
         if: github.ref == 'refs/heads/branch-0.2' && (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true))
         uses: ./.github/workflows/auto-merge
         env:
-          OWNER: NVIDIA
+          OWNER: pxLi
           REPO_NAME: spark-rapids
           HEAD: branch-0.2
           BASE: branch-0.3
