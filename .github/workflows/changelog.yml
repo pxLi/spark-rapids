@@ -46,14 +46,15 @@ jobs:
         with:
           token: ${{ secrets.PAT }}
           commit-message: "changelog-gen ${{ steps.dt.outputs.date }}"
-          committer: Peixin Li <pxli@nyu.edu>
-          author: Peixin Li <pxli@nyu.edu>
+          committer: nvauto <sw-gpu-spark-github-nvauto@nvidia.com>
+          author: nvauto <sw-gpu-spark-github-nvauto@nvidia.com>
           signoff: true
           branch: changelog-night-update
           title: '[DOC] Changelog update ${{ steps.dt.outputs.date }} [skip ci] [bot]'
           body: |
             changelog-gen runs on ${{ steps.dt.outputs.date }}
-            check script stdout: [job_${{ github.run_id }}](https://github.com/pxLi/spark-rapids/runs/${{ github.run_id }}?check_suite_focus=true#step:3:1)
+
+            check script stdout: [job_run_${{ github.run_id }}](https://github.com/pxLi/spark-rapids/actions/runs/${{ github.run_id }})
 
             Please review the generated CHANGELOG.md, then merge or close the PR and feel free to **delete** the remote branch.
           labels: |
