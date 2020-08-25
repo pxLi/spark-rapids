@@ -33,7 +33,7 @@ jobs:
         if: github.event.pull_request.merged == true
         uses: ./.github/workflows/changelog
         env:
-          GITHUB_TOKEN: ${{ secrets.NVAUTO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
 
       - name: Get date
         id: dt
@@ -44,7 +44,7 @@ jobs:
         if: github.event.pull_request.merged == true
         uses: peter-evans/create-pull-request@v3
         with:
-          token: ${{ secrets.NVAUTO_TOKEN }}
+          token: ${{ secrets.PAT }}
           commit-message: "changelog-gen ${{ steps.dt.outputs.date }}"
           committer: nvauto <sw-gpu-spark-github-nvauto@nvidia.com>
           author: nvauto <sw-gpu-spark-github-nvauto@nvidia.com>
