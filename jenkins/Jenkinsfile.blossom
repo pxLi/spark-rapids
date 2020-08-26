@@ -1,0 +1,32 @@
+#!/usr/local/env groovy
+
+podTemplate (label: 'peixin-test', cloud:'sc-ipp-blossom-prod', yaml: '''
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: cuda101
+    image: xgbci/rapids-plugin-build:ubuntu16-cuda10.1
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+    restartPolicy: Never
+    backoffLimit: 1
+    tty: true
+  nodeSelector:
+    kubernetes.io/os: linux
+    nvidia.com/driver_version: "450.37"
+''') {
+    node('peixin-test') {
+        stage ('checkout') {
+            checkout scm
+        }
+        stage ('Build') {
+            container('cuda101') {
+                sh "ls -l && nvidia-smi "
+                sh "ls /usr/local"
+                sh "mvn package -DskipTests"
+            }
+        }
+    }
+}
