@@ -33,7 +33,7 @@ jobs:
         if: github.event.pull_request.merged == true
         uses: ./.github/workflows/changelog
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get date
         id: dt
@@ -44,10 +44,10 @@ jobs:
         if: github.event.pull_request.merged == true
         uses: peter-evans/create-pull-request@v3
         with:
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "changelog-gen ${{ steps.dt.outputs.date }}"
-          committer: nvauto <sw-gpu-spark-github-nvauto@nvidia.com>
-          author: nvauto <sw-gpu-spark-github-nvauto@nvidia.com>
+#           committer: nvauto <sw-gpu-spark-github-nvauto@nvidia.com>
+#           author: nvauto <sw-gpu-spark-github-nvauto@nvidia.com>
           signoff: true
           branch: changelog-night-update
           title: '[DOC] Changelog update ${{ steps.dt.outputs.date }} [skip ci] [bot]'
