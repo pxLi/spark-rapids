@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: sigoff-check job
-        uses: ./.github/workflows/sigoff-check
+        uses: ./.github/workflows/signoff-check
         env:
           OWNER: NVIDIA
           REPO_NAME: spark-rapids
