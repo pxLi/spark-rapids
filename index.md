@@ -31,4 +31,4 @@ A single pipeline, from ingest to data preparation to model training
 ![spark3cluster](/docs/img/spark3cluster.png)
 
 
-#1 w/ signoff
+#1 w/ signoff ok
