@@ -1,0 +1,9 @@
+# action.yml
+name: 'changelog action'
+description: 'generate the changelog'
+outputs:
+  stdout: # id of output
+    description: 'logs'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
