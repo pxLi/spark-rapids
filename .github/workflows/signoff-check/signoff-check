@@ -26,8 +26,8 @@ from argparse import ArgumentParser
 from github import Github
 
 parser = ArgumentParser(description="signoff check")
-parser.add_argument("--owner", help="repo owner", default='NVIDIA')
-parser.add_argument("--repo_name", help="repo name", default='spark-rapids')
+parser.add_argument("--owner", help="repo owner", default='')
+parser.add_argument("--repo_name", help="repo name", default='')
 parser.add_argument("--token", help="github token, will use GITHUB_TOKEN if empty", default='')
 parser.add_argument("--pull_number", help="pull request number", type=int)
 args = parser.parse_args()
