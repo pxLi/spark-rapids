@@ -30,7 +30,7 @@
     <packaging>pom</packaging>
     <name>RAPIDS Accelerator for Apache Spark SQL Plugin Shims</name>
     <description>The RAPIDS SQL plugin for Apache Spark Shims</description>
-    <version>0.2.1-SNAPSHOT</version>
+    <version>0.2.2-SNAPSHOT</version>
 
     <profiles>
         <profile>
