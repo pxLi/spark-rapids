@@ -12,27 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# A workflow to keep BASE branch up-to-date from HEAD branch
-name: auto-merge HEAD to BASE
+FROM python:alpine
 
-on:
-  pull_request_target:
-    branches:
-    - branch-0.2
-    types: [closed]
+WORKDIR /
+COPY signoff-check .
+RUN pip install PyGithub && chmod +x /signoff-check
 
-jobs:
-  auto-merge:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: auto-merge job
-        if: github.event.pull_request.merged == true
-        uses: ./.github/workflows/auto-merge
-        env:
-          OWNER: pxLi
-          REPO_NAME: spark-rapids
-          HEAD: branch-0.2
-          BASE: branch-0.3
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+# require envs: OWNER,REPO_NAME,GITHUB_TOKEN,PULL_NUMBER
+ENTRYPOINT ["/signoff-check"]

@@ -12,27 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# A workflow to keep BASE branch up-to-date from HEAD branch
-name: auto-merge HEAD to BASE
+# A workflow to check if PR got sign-off
+name: signoff check
 
 on:
   pull_request_target:
     branches:
-    - branch-0.2
-    types: [closed]
+      - branch-*
+    types: [opened, synchronize, reopened]
 
 jobs:
-  auto-merge:
+  signoff-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - name: auto-merge job
-        if: github.event.pull_request.merged == true
-        uses: ./.github/workflows/auto-merge
+      - name: sigoff-check job
+        uses: ./.github/workflows/signoff-check
         env:
-          OWNER: pxLi
+          OWNER: NVIDIA
           REPO_NAME: spark-rapids
-          HEAD: branch-0.2
-          BASE: branch-0.3
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PULL_NUMBER: ${{ github.event.number }}

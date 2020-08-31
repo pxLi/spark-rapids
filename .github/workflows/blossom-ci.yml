@@ -12,27 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# A workflow to keep BASE branch up-to-date from HEAD branch
-name: auto-merge HEAD to BASE
+# A workflow to trigger blossom-CI on self-hosted runner
+name: blossom-ci trigger
 
 on:
-  pull_request_target:
-    branches:
-    - branch-0.2
-    types: [closed]
-
+  issue_comment:
+    types: [created]
+    
 jobs:
-  auto-merge:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+  build:
+    if: github.event.comment.body == 'build'
+    runs-on: [self-hosted, linux, blossom]
 
-      - name: auto-merge job
-        if: github.event.pull_request.merged == true
-        uses: ./.github/workflows/auto-merge
-        env:
-          OWNER: pxLi
-          REPO_NAME: spark-rapids
-          HEAD: branch-0.2
-          BASE: branch-0.3
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - name: trigger blossom ci
+      run: blossom-ci
+      env:
+        CI_SERVER: ${{ secrets.CI_SERVER }}
+        REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
