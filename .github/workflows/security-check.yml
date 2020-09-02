@@ -26,6 +26,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      
+      - name: get
+        run: |
+          echo "${{GITHUB_SHA}} ${{GITHUB_REF}} ${{GITHUB_HEAD_REF}} ${{GITHUB_BASE_REF}} ${{ github.event.pull_request.head.sha }} ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.ref }} github.event.pull_request.base.ref"
+
 
       - name: set java
         uses: actions/setup-java@v1
