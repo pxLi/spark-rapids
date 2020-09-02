@@ -27,7 +27,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: "pull/${{ github.event.pull_request.number }}/head"
+          repository: ${{ github.event.pull_request.repo.full_name }} 
+          ref: ${{ github.event.pull_request.head.sha }} 
       
       - name: get
         run: |
