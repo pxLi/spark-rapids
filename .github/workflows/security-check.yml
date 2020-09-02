@@ -17,7 +17,7 @@ name: security check
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the branch-0.2 branch
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, reopened, synchronize]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -26,6 +26,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      
+      - name: get
+        run: |
+          echo "${{GITHUB_SHA}} ${{GITHUB_REF}} ${{GITHUB_HEAD_REF}} ${{GITHUB_BASE_REF}}"
 
       - name: set java
         uses: actions/setup-java@v1
