@@ -38,3 +38,6 @@ RUN ln -s /usr/bin/python3.6 /usr/bin/python
 RUN python -m pip install pytest sre_yield requests
 
 RUN apt install -y inetutils-ping expect
+
+RUN adduser --uid 26576 --gid 30 --shell /bin/bash svcngcc
+USER svcngcc
