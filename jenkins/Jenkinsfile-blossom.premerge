@@ -138,6 +138,7 @@ pipeline {
 
         stage('Build docker image') {
             when {
+              beforeAgent true
               expression {
                 !skiped
               }        
@@ -194,6 +195,7 @@ pipeline {
         // TODO: support parallel testing for different spark versions
         stage('Premerge Test') {
             when {
+              beforeAgent true
               expression {
                 !skiped
               }        
@@ -241,7 +243,6 @@ pipeline {
         always {
             script {
                 if (skiped) {
-                    githubHelper.updateCommitStatus("$BUILD_URL", "Skip", GitHubCommitState.SUCCESS)
                     return
                 }
               
