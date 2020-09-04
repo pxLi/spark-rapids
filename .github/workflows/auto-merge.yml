@@ -23,12 +23,13 @@ on:
 
 jobs:
   auto-merge:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
 
       - name: auto-merge job
-        if: github.event.pull_request.merged == true
         uses: ./.github/workflows/auto-merge
         env:
           OWNER: pxLi
