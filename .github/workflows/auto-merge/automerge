@@ -81,6 +81,7 @@ def auto_merge(github_token: str, owner: str, repo_name: str, number: str, commi
                     content='**SUCCESS** - auto-approve')
             print('SUCCESS - auto-approve')
         else:
+            print('FAILURE - auto-approve')
             raise Exception(r.json())
 
         # auto-merge PR
@@ -96,6 +97,7 @@ def auto_merge(github_token: str, owner: str, repo_name: str, number: str, commi
             print('SUCCESS - auto-merge')
             sys.exit(0)
         else:
+            print('FAILURE - auto-merge')
             raise Exception(r.json())
     except Exception as e:
         comment(github_token=github_token, owner=owner, repo_name=repo_name, number=number,
@@ -104,8 +106,6 @@ def auto_merge(github_token: str, owner: str, repo_name: str, number: str, commi
 {e}
 ```
 """)
-
-        print('FAILURE - auto-merge')
         print(e)
         sys.exit(1)
 
