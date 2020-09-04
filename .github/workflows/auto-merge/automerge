@@ -99,7 +99,7 @@ def auto_merge(github_token: str, nvauto_token: str, owner: str, repo_name: str,
     except Exception as e:
         comment(github_token=github_token, owner=owner, repo_name=repo_name, number=number,
                 content=f"""**FAILURE** - Unable to auto-merge. Manual operation is required.
-```json
+```
 {e}
 ```
 """)
