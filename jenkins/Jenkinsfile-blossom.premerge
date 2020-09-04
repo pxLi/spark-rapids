@@ -127,7 +127,7 @@ pipeline {
                                         
                     if (title ==~ /.*\[skip ci\].*/) {
                       githubHelper.updateCommitStatus("$BUILD_URL", "Skiped", GitHubCommitState.SUCCESS)
-                      currentBuild.result = 'SUCCESS'
+                      currentBuild.result = 'SKIPED'
                       return
                     }
                 }
@@ -135,6 +135,12 @@ pipeline {
         }
 
         stage('Build docker image') {
+            when {
+              expression {
+                currentBuild.currentResult != "SKIPED"
+              }        
+            }
+            
             agent {
                 kubernetes {
                     label "premerge-docker-${BUILD_TAG}"
@@ -185,6 +191,12 @@ pipeline {
 
         // TODO: support parallel testing for different spark versions
         stage('Premerge Test') {
+            when {
+              expression {
+                currentBuild.currentResult != "SKIPED"
+              }        
+            }
+          
             agent {
                 kubernetes {
                     label "premerge-test-${BUILD_TAG}"
@@ -229,6 +241,8 @@ pipeline {
                 deleteDockerTempTag(PREMERGE_TAG) // clean premerge temp image
                 if (currentBuild.currentResult == "SUCCESS") {
                     githubHelper.updateCommitStatus("$BUILD_URL", "Success", GitHubCommitState.SUCCESS)
+                } else if (currentBuild.currentResult == "SKIPED"){
+                    githubHelper.updateCommitStatus("$BUILD_URL", "Skip", GitHubCommitState.SUCCESS)
                 } else {
                     githubHelper.updateCommitStatus("$BUILD_URL", "Fail", GitHubCommitState.FAILURE)
                 }
