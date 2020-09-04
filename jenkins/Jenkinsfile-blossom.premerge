@@ -91,6 +91,7 @@ spec:
 def githubHelper // blossom github helper
 def IMAGE_PREMERGE // temp image for premerge test
 def PREMERGE_TAG
+def skiped = false
 
 pipeline {
     agent {
@@ -127,7 +128,8 @@ pipeline {
                                         
                     if (title ==~ /.*\[skip ci\].*/) {
                       githubHelper.updateCommitStatus("$BUILD_URL", "Skiped", GitHubCommitState.SUCCESS)
-                      currentBuild.result = 'SKIPED'
+                      currentBuild.result == "SUCCESS"
+                      skiped = true
                       return
                     }
                 }
@@ -137,7 +139,7 @@ pipeline {
         stage('Build docker image') {
             when {
               expression {
-                currentBuild.currentResult != "SKIPED"
+                !skiped
               }        
             }
             
@@ -193,7 +195,7 @@ pipeline {
         stage('Premerge Test') {
             when {
               expression {
-                currentBuild.currentResult != "SKIPED"
+                !skiped
               }        
             }
           
@@ -238,11 +240,14 @@ pipeline {
     post {
         always {
             script {
+                if skiped {
+                    githubHelper.updateCommitStatus("$BUILD_URL", "Skip", GitHubCommitState.SUCCESS)
+                    return
+                }
+              
                 deleteDockerTempTag(PREMERGE_TAG) // clean premerge temp image
                 if (currentBuild.currentResult == "SUCCESS") {
                     githubHelper.updateCommitStatus("$BUILD_URL", "Success", GitHubCommitState.SUCCESS)
-                } else if (currentBuild.currentResult == "SKIPED"){
-                    githubHelper.updateCommitStatus("$BUILD_URL", "Skip", GitHubCommitState.SUCCESS)
                 } else {
                     githubHelper.updateCommitStatus("$BUILD_URL", "Fail", GitHubCommitState.FAILURE)
                 }
