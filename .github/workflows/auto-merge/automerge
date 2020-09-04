@@ -75,7 +75,7 @@ def auto_merge(github_token: str, owner: str, repo_name: str, number: str, commi
             'event': 'APPROVE',
             'body': 'auto-approved',
         }
-        r = requests.put(approve_url, headers=auth_header, json=approve_params)
+        r = requests.post(approve_url, headers=auth_header, json=approve_params)
         if r.status_code == 200:
             comment(github_token=github_token, owner=owner, repo_name=repo_name, number=number,
                     content='**SUCCESS** - auto-approve')
