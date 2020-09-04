@@ -63,10 +63,7 @@ def create(github_token: str, owner: str, repo_name: str, head: str, base: str):
     sys.exit(1)
 
 
-def auto_merge(github_token: str, owner: str, repo_name: str, number: str, commit_id: str):
-    auth_header = {
-        'Authorization': 'token ' + github_token
-    }
+def auto_merge(github_token: str, nvauto_token: str, owner: str, repo_name: str, number: str, commit_id: str):
     try:
         # auto-approve PR
         approve_url = f'{API_URL}/repos/{owner}/{repo_name}/pulls/{number}/reviews'
@@ -75,7 +72,7 @@ def auto_merge(github_token: str, owner: str, repo_name: str, number: str, commi
             'event': 'APPROVE',
             'body': 'auto-approved',
         }
-        r = requests.post(approve_url, headers=auth_header, json=approve_params)
+        r = requests.post(approve_url, headers={'Authorization': 'token ' + nvauto_token}, json=approve_params)
         if r.status_code == 200:
             comment(github_token=github_token, owner=owner, repo_name=repo_name, number=number,
                     content='**SUCCESS** - auto-approve')
@@ -90,7 +87,7 @@ def auto_merge(github_token: str, owner: str, repo_name: str, number: str, commi
             'sha': commit_id,
             'merge_method': 'merge',
         }
-        r = requests.put(merge_url, headers=auth_header, json=merge_params)
+        r = requests.put(merge_url, headers={'Authorization': 'token ' + github_token}, json=merge_params)
         if r.status_code == 200:
             comment(github_token=github_token, owner=owner, repo_name=repo_name, number=number,
                     content='**SUCCESS** - auto-merge')
@@ -127,14 +124,15 @@ def comment(github_token: str, owner: str, repo_name: str, number: str, content:
         print(r.json())
 
 
-def main(github_token: str, owner: str, repo_name: str, head: str, base: str):
+def main(github_token: str, nvauto_token: str, owner: str, repo_name: str, head: str, base: str):
     try:
         number, sha, term = create(github_token=github_token, owner=owner, repo_name=repo_name, head=head, base=base)
         if term:
             sys.exit(0)
 
         time.sleep(10)  # sleep 5 minutes, then comment
-        auto_merge(github_token=github_token, owner=owner, repo_name=repo_name, number=number, commit_id=sha)
+        auto_merge(github_token=github_token, nvauto_token=nvauto_token,
+                   owner=owner, repo_name=repo_name, number=number, commit_id=sha)
     except Exception as e:
         print("Unexpected error: ", e)
         exit(-1)
@@ -143,6 +141,8 @@ def main(github_token: str, owner: str, repo_name: str, head: str, base: str):
 if __name__ == "__main__":
     GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')
     assert GITHUB_TOKEN, 'env GITHUB_TOKEN should not be empty'
+    NVAUTO_TOKEN = os.environ.get('NVAUTO_TOKEN')
+    assert NVAUTO_TOKEN, 'env NVAUTO_TOKEN should not be empty'
     OWNER = os.environ.get('OWNER')
     assert OWNER, 'env OWNER should not be empty'
     REPO_NAME = os.environ.get('REPO_NAME')
@@ -152,4 +152,4 @@ if __name__ == "__main__":
     BASE = os.environ.get('BASE')
     assert BASE, 'env BASE should not be empty'
 
-    main(github_token=GITHUB_TOKEN, owner=OWNER, repo_name=REPO_NAME, head=HEAD, base=BASE)
+    main(github_token=GITHUB_TOKEN, nvauto_token=NVAUTO_TOKEN, owner=OWNER, repo_name=REPO_NAME, head=HEAD, base=BASE)
