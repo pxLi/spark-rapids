@@ -127,6 +127,8 @@ pipeline {
                                         
                     if (title ==~ /.*\[skip ci\].*/) {
                       githubHelper.updateCommitStatus("$BUILD_URL", "Skiped", GitHubCommitState.SUCCESS)
+                      currentBuild.result = 'SUCCESS'
+                      return
                     }
                 }
             }
