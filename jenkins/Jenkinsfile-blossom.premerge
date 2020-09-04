@@ -125,7 +125,9 @@ pipeline {
                     githubHelper = GithubHelper.getInstance("${GITHUB_TOKEN}", githubData)
                     def title = githubHelper.getIssue().title
                                         
-                    sh "echo ${title}"
+                    if title ==~ /.*\[skip ci\].*/ {
+                      githubHelper.updateCommitStatus("$BUILD_URL", "Success", GitHubCommitState.SUCCESS)
+                    }
                 }
             }
         }
