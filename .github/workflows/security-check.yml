@@ -18,8 +18,6 @@ name: security check
 # events but only for the branch-0.2 branch
 on:
   pull_request_target:
-    branches:
-      - branch-*
     types: [opened, reopened, synchronize]
     
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
