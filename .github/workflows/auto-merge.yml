@@ -36,3 +36,4 @@ jobs:
           HEAD: branch-0.2
           BASE: branch-0.3
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NVAUTO_TOKEN: ${{ secrets.NVAUTO_TOKEN }}
