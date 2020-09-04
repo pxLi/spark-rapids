@@ -240,7 +240,7 @@ pipeline {
     post {
         always {
             script {
-                if skiped {
+                if (skiped) {
                     githubHelper.updateCommitStatus("$BUILD_URL", "Skip", GitHubCommitState.SUCCESS)
                     return
                 }
