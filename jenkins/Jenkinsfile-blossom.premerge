@@ -124,7 +124,7 @@ pipeline {
                 script {
                     githubHelper = GithubHelper.getInstance("${GITHUB_TOKEN}", githubData)
                     def issue = githubHelper.getIssue()
-                    sh "echo ${issue.title}"
+                    // sh "echo ${issue.title}"
                 }
             }
         }
