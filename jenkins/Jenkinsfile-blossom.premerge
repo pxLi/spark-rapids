@@ -87,10 +87,7 @@ spec:
           - key: nvidia.com/gpu_type
             operator: In
             values:
-            - Tesla_V100S_PCIE_32GB
-            - Tesla_V100_PCIE_32GB
-            - TITAN_RTX
-            - Tesla_T4
+            - GA100-E4720-DVT
 """
 
 def githubHelper // blossom github helper
