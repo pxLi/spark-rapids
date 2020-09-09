@@ -87,7 +87,7 @@ spec:
           - key: nvidia.com/gpu_type
             operator: In
             values:
-            - GA100-E4720-DVT
+            - GA102-V0S-FX-A1-TS2
 """
 
 def githubHelper // blossom github helper
