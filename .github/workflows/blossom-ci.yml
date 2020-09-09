@@ -77,7 +77,7 @@ jobs:
 
       - name: do maven install (maven)
         run: |
-          mvn clean install -DskipTests -T 1C
+          mvn clean install -DskipTests -T 1.5C
       
       - name: Add mask
         run: echo "::add-mask::${{ secrets.BLACKDUCK_URL }}"
