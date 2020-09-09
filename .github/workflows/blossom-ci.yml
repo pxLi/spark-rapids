@@ -40,7 +40,7 @@ jobs:
         id: pull_request_data
         uses: octokit/request-action@v2.x
         with:
-          route: GET /repos/:repository/pulls/:issue_id
+          route: 'GET /repos/:repository/pulls/:issue_id'
           repository: ${{ github.repository }}
           issue_id: ${{ github.event.issue.number }}
         env:
@@ -53,7 +53,7 @@ jobs:
       - name: Update status
         uses: octokit/request-action@v2.x
         with:
-          route: POST /repos/:repository/statuses/:sha
+          route: 'POST /repos/:repository/statuses/:sha'
           repository: ${{ github.repository }}
           sha: ${{ fromJson(steps.pull_request_data.outputs.data).head.sha }}
           state: "pending"
