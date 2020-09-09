@@ -60,9 +60,6 @@ spec:
     image: IMAGE_PREMERGE
     imagePullPolicy: Always
     resources:
-      requests:
-        cpu: 8
-        memory: 16Gi
       limits:
         nvidia.com/gpu: 1
     restartPolicy: Never
