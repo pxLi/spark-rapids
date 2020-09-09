@@ -75,10 +75,10 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: do maven install (maven)
+      - name: Get project data (maven)
         run: |
-          mvn clean install -DskipTests -T 1.5C
-      
+          echo ::set-env name=projects::$(mvn -am dependency:tree | grep maven-dependency-plugin | awk '{ out="com.nvidia:"$(NF-1);print out }' | grep rapids | xargs | sed -e 's/ /,/g')
+            
       - name: Add mask
         run: echo "::add-mask::${{ secrets.BLACKDUCK_URL }}"
       
@@ -91,7 +91,8 @@ jobs:
           args: >
             --blackduck.url="https://${{ secrets.BLACKDUCK_URL }}" 
             --blackduck.api.token="${{ secrets.BLACKDUCK_API_TOKEN }}" 
-            --detect.force.success=false 
+            --detect.maven.build.command="-pl='$PROJECTS -am'"
+            --detect.force.success=false
             --detect.parallel.processors=0
             --detect.project.name="${{ github.repository }}"
             --detect.project.version.name="${{ github.run_id }}"
