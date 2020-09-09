@@ -38,7 +38,11 @@ spec:
     args:
     - 99d
     resources:
+      limits:
+        cpu: 4
+        memory: 8Gi
       requests:
+        cpu: 4
         memory: 8Gi
     env:
       - name: DOCKER_HOST
@@ -64,6 +68,11 @@ spec:
     imagePullPolicy: Always
     resources:
       requests:
+      limits:
+        cpu: 8
+        memory: 16Gi
+      requests:
+        cpu: 8
         memory: 16Gi
       limits:
         nvidia.com/gpu: 1
