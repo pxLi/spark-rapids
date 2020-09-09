@@ -37,6 +37,9 @@ spec:
     - sleep
     args:
     - 99d
+    resources:
+      requests:
+        memory: 8Gi
     env:
       - name: DOCKER_HOST
         value: tcp://localhost:2375
@@ -60,6 +63,8 @@ spec:
     image: IMAGE_PREMERGE
     imagePullPolicy: Always
     resources:
+      requests:
+        memory: 16Gi
       limits:
         nvidia.com/gpu: 1
     restartPolicy: Never
