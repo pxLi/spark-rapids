@@ -22,7 +22,7 @@
  */
 
 @Library('shared-libs') _
-@Library('blossom-github-lib@master')
+@Library('blossom-github-lib')
 import ipp.blossom.*
 
 
