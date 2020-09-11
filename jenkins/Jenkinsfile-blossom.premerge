@@ -46,6 +46,10 @@ spec:
     env:
       - name: DOCKER_HOST
         value: tcp://localhost:2375
+    volumeMounts:
+      - mountPath: "/home/jenkins/agent"
+        name: workspace-volume
+        readOnly: false
   - name: plugin-docker-daemon
     image: docker:19.03.12-dind
     securityContext:
@@ -53,6 +57,11 @@ spec:
     env:
       - name: DOCKER_TLS_CERTDIR
         value: ""
+  volumes:
+    - name: workspace-volume
+      persistentVolumeClaim:
+        claimName: sw-gpu-spark-storage
+        readOnly: false
   nodeSelector:
     kubernetes.io/os: linux
 """
@@ -160,6 +169,7 @@ pipeline {
 
             agent {
                 kubernetes {
+                    customWorkspace "/home/jenkins/agent/workspace"
                     label "premerge-docker-${BUILD_TAG}"
                     cloud 'sc-ipp-blossom-prod'
                     yaml "$pluginDockerBuild"
