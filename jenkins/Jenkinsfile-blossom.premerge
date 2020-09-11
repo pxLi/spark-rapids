@@ -25,7 +25,6 @@
 @Library('blossom-github-lib@master')
 import ipp.blossom.*
 
-
 def pluginDockerBuild = """
 apiVersion: v1
 kind: Pod
@@ -77,6 +76,15 @@ spec:
     restartPolicy: Never
     backoffLimit: 2
     tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: workspace-volume
+      readOnly: false
+  volumes:
+    - name: workspace-volume
+      persistentVolumeClaim:
+        claimName: sw-gpu-spark-storage
+        readOnly: false
   nodeSelector:
     kubernetes.io/os: linux
   affinity:
@@ -120,18 +128,17 @@ pipeline {
         LIBCUDF_KERNEL_CACHE_PATH = '/tmp/.cudf'
         ARTIFACTORY_NAME = "${ArtifactoryConstants.ARTIFACTORY_NAME}"
         GITHUB_TOKEN = credentials("github-token")
+        // TODO: rename this credential after we shutdown premerge pipeline on ngcc
         URM_CREDS = credentials("svcngcc_artifactory")
         URM_URL = "https://${ArtifactoryConstants.ARTIFACTORY_NAME}/artifactory/sw-spark-maven"
     }
 
     stages {
-        stage("init githubHelper") {
+        stage("Init githubHelper") {
             steps {
                 script {
                     githubHelper = GithubHelper.getInstance("${GITHUB_TOKEN}", githubData)
                     def title = githubHelper.getIssue().title
-                    
-                    sh "echo $title"
 
                     if (title ==~ /.*\[skip ci\].*/) {
                         githubHelper.updateCommitStatus("$BUILD_URL", "Skipped", GitHubCommitState.SUCCESS)
@@ -141,7 +148,7 @@ pipeline {
                     }
                 }
             }
-        }
+        } // end of Init githubHelper
 
         stage('Build docker image') {
             when {
@@ -210,6 +217,7 @@ pipeline {
 
             agent {
                 kubernetes {
+                    customWorkspace "/home/jenkins/agent/workspace"
                     label "premerge-test-${BUILD_TAG}"
                     cloud 'sc-ipp-blossom-prod'
                     yaml "$pluginPremerge"
