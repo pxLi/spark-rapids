@@ -84,14 +84,6 @@ spec:
     restartPolicy: Never
     backoffLimit: 2
     tty: true
-    volumeMounts:
-    - mountPath: "/workspace"
-      name: custom-workspace
-  volumes:
-    - name: workspace-volume
-      persistentVolumeClaim:
-        claimName: sw-gpu-spark-storage
-        readOnly: false
   nodeSelector:
     kubernetes.io/os: linux
   affinity:
@@ -167,10 +159,10 @@ pipeline {
 
             agent {
                 kubernetes {
-                    customWorkspace "/workspace"
                     label "premerge-docker-${BUILD_TAG}"
                     cloud 'sc-ipp-blossom-prod'
                     yaml "$pluginDockerBuild"
+                    workspaceVolume persistentVolumeClaimWorkspaceVolume("sw-gpu-spark-storage", false)
                 }
             }
 
