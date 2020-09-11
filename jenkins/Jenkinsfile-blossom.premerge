@@ -47,8 +47,8 @@ spec:
       - name: DOCKER_HOST
         value: tcp://localhost:2375
     volumeMounts:
-      - mountPath: "/home/jenkins/agent"
-        name: workspace-volume
+      - mountPath: "/workspace"
+        name: custom-workspace
         readOnly: false
   - name: plugin-docker-daemon
     image: docker:19.03.12-dind
@@ -58,7 +58,7 @@ spec:
       - name: DOCKER_TLS_CERTDIR
         value: ""
   volumes:
-    - name: workspace-volume
+    - name: custom-workspace
       persistentVolumeClaim:
         claimName: sw-gpu-spark-storage
         readOnly: false
@@ -86,11 +86,11 @@ spec:
     backoffLimit: 2
     tty: true
     volumeMounts:
-    - mountPath: "/home/jenkins/agent"
-      name: workspace-volume
+    - mountPath: "/workspace"
+      name: custom-workspace
       readOnly: false
   volumes:
-    - name: workspace-volume
+    - name: custom-workspace
       persistentVolumeClaim:
         claimName: sw-gpu-spark-storage
         readOnly: false
@@ -169,7 +169,7 @@ pipeline {
 
             agent {
                 kubernetes {
-                    customWorkspace "/home/jenkins/agent/workspace"
+                    customWorkspace "/workspace"
                     label "premerge-docker-${BUILD_TAG}"
                     cloud 'sc-ipp-blossom-prod'
                     yaml "$pluginDockerBuild"
@@ -217,7 +217,6 @@ pipeline {
         } // end of Build docker image
 
         // TODO: support parallel testing for different spark versions
-        stage('Premerge Test') {
             when {
                 beforeAgent true
                 expression {
@@ -227,7 +226,7 @@ pipeline {
 
             agent {
                 kubernetes {
-                    customWorkspace "/home/jenkins/agent/workspace"
+                    customWorkspace "/workspace"
                     label "premerge-test-${BUILD_TAG}"
                     cloud 'sc-ipp-blossom-prod'
                     yaml "$pluginPremerge"
