@@ -49,7 +49,6 @@ spec:
     volumeMounts:
       - mountPath: "/workspace"
         name: custom-workspace
-        readOnly: false
   - name: plugin-docker-daemon
     image: docker:19.03.12-dind
     securityContext:
@@ -88,7 +87,6 @@ spec:
     volumeMounts:
     - mountPath: "/workspace"
       name: custom-workspace
-      readOnly: false
   volumes:
     - name: workspace-volume
       persistentVolumeClaim:
