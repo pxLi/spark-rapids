@@ -46,9 +46,6 @@ spec:
     env:
       - name: DOCKER_HOST
         value: tcp://localhost:2375
-    volumeMounts:
-      - mountPath: "/workspace"
-        name: custom-workspace
   - name: plugin-docker-daemon
     image: docker:19.03.12-dind
     securityContext:
@@ -56,11 +53,6 @@ spec:
     env:
       - name: DOCKER_TLS_CERTDIR
         value: ""
-  volumes:
-    - name: custom-workspace
-      persistentVolumeClaim:
-        claimName: sw-gpu-spark-storage
-        readOnly: false
   nodeSelector:
     kubernetes.io/os: linux
 """
@@ -217,10 +209,10 @@ pipeline {
 
             agent {
                 kubernetes {
-                    customWorkspace "/workspace"
                     label "premerge-test-${BUILD_TAG}"
                     cloud 'sc-ipp-blossom-prod'
                     yaml "$pluginPremerge"
+                    workspaceVolume persistentVolumeClaimWorkspaceVolume("sw-gpu-spark-storage", false)
                 }
             }
 
