@@ -90,7 +90,7 @@ spec:
       name: custom-workspace
       readOnly: false
   volumes:
-    - name: custom-workspace
+    - name: workspace-volume
       persistentVolumeClaim:
         claimName: sw-gpu-spark-storage
         readOnly: false
@@ -217,6 +217,7 @@ pipeline {
         } // end of Build docker image
 
         // TODO: support parallel testing for different spark versions
+        stage('Premerge Test') {
             when {
                 beforeAgent true
                 expression {
