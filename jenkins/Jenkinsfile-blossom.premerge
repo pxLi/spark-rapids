@@ -124,7 +124,11 @@ pipeline {
     stages {
         stage("Init githubHelper") {
             steps {
-                script {
+                script {                  
+                    sh "ls -ltr /"
+                    sh "df -h"
+                    sh "cat /etc/passwd"
+                    sh "whoami"
                     githubHelper = GithubHelper.getInstance("${GITHUB_TOKEN}", githubData)
                     def title = githubHelper.getIssue().title
 
@@ -151,12 +155,17 @@ pipeline {
                     label "premerge-docker-${BUILD_TAG}"
                     cloud 'sc-ipp-blossom-prod'
                     yaml "$pluginDockerBuild"
-                    workspaceVolume persistentVolumeClaimWorkspaceVolume(claimName: 'sw-gpu-spark-pvc', readOnly: false)
+                    //workspaceVolume persistentVolumeClaimWorkspaceVolume(claimName: 'sw-gpu-spark-pvc', readOnly: false)
                 }
             }
 
             steps {
                 script {
+                    sh "ls -ltr /"
+                    sh "df -h"
+                    sh "cat /etc/passwd"
+                    sh "whoami"
+
                     githubHelper.updateCommitStatus("$BUILD_URL", "Running", GitHubCommitState.PENDING)
 
                     currentBuild.description = githubHelper.getBuildDescription()
@@ -210,12 +219,17 @@ pipeline {
                     label "premerge-test-${BUILD_TAG}"
                     cloud 'sc-ipp-blossom-prod'
                     yaml "$pluginPremerge"
-                    workspaceVolume persistentVolumeClaimWorkspaceVolume(claimName: 'sw-gpu-spark-pvc', readOnly: false)
+                    //workspaceVolume persistentVolumeClaimWorkspaceVolume(claimName: 'sw-gpu-spark-pvc', readOnly: false)
                 }
             }
 
             steps {
                 script {
+                    sh "ls -ltr /"
+                    sh "df -h"
+                    sh "cat /etc/passwd"
+                    sh "whoami"
+
                     checkout(
                             changelog: false,
                             poll: true,
