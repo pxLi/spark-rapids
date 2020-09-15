@@ -94,7 +94,7 @@ jobs:
             --detect.force.success=false
             --detect.parallel.processors=0
             --detect.project.name="${{ github.repository }}"
-            --detect.project.version.name="${{ github.event.issue.number }}"
+            --detect.project.version.name="${{ github.run_id }}"
              
   vulnerability-check-trigger:
     name: Vulnerability check & start ci job
@@ -108,7 +108,7 @@ jobs:
           VERSION: '1'
           BLACKDUCK_TOKEN: "${{ secrets.BLACKDUCK_API_TOKEN }}" 
           BLACKDUCK_URL: "${{ secrets.BLACKDUCK_URL }}"
-          BLACKDUCK_PROJECT_VERSION: "${{ github.event.issue.number }}"
+          BLACKDUCK_PROJECT_VERSION: "${{ github.run_id }}"
           CI_SERVER: ${{ secrets.CI_SERVER }}
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
