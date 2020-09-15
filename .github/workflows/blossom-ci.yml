@@ -94,7 +94,7 @@ jobs:
             --detect.force.success=false
             --detect.parallel.processors=0
             --detect.project.name="${{ github.repository }}"
-            --detect.project.version.name="${{ github.run_id }}"
+            --detect.project.version.name="${{ github.event.issue.number }}"
              
   vulnerability-check-trigger:
     name: Vulnerability check & start ci job
