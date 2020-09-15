@@ -29,9 +29,6 @@ def pluginDockerBuild = """
 apiVersion: v1
 kind: Pod
 spec:
-  securityContext:
-    runAsUser: 1000
-    fsGroup: 1000
   containers:
   - name: plugin-docker
     image: docker:19.03.12
@@ -101,6 +98,7 @@ pipeline {
         kubernetes {
             label "premerge-init-${BUILD_TAG}"
             cloud 'sc-ipp-blossom-prod'
+            workspaceVolume persistentVolumeClaimWorkspaceVolume(claimName: 'sw-gpu-spark-pvc', readOnly: false)
         }
     }
 
@@ -229,7 +227,7 @@ pipeline {
                     label "premerge-test-${BUILD_TAG}"
                     cloud 'sc-ipp-blossom-prod'
                     yaml "$pluginPremerge"
-                    //workspaceVolume persistentVolumeClaimWorkspaceVolume(claimName: 'sw-gpu-spark-pvc', readOnly: false)
+                    workspaceVolume persistentVolumeClaimWorkspaceVolume(claimName: 'sw-gpu-spark-pvc', readOnly: false)
                 }
             }
 
