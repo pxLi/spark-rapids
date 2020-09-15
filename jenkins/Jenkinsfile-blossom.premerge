@@ -104,7 +104,6 @@ pipeline {
         kubernetes {
             label "premerge-init-${BUILD_TAG}"
             cloud 'sc-ipp-blossom-prod'
-            workspaceVolume persistentVolumeClaimWorkspaceVolume(claimName: 'sw-gpu-spark-pvc', readOnly: false)
         }
     }
 
@@ -132,12 +131,6 @@ pipeline {
         stage("Init githubHelper") {
             steps {
                 script {                  
-                    sh "ls -ltr /"
-                    sh "ls -ltr /home"
-                    sh "ls -ltr /home/jenkins"
-                    sh "ls -ltr /home/jenkins/agent"                 
-                    sh "df -h"
-                    sh "whoami"
                     githubHelper = GithubHelper.getInstance("${GITHUB_TOKEN}", githubData)
                     def title = githubHelper.getIssue().title
 
