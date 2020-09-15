@@ -126,6 +126,9 @@ pipeline {
             steps {
                 script {                  
                     sh "ls -ltr /"
+                    sh "ls -ltr /home"
+                    sh "ls -ltr /home/jenkins"
+                    sh "ls -ltr /home/jenkins/agent"                 
                     sh "df -h"
                     sh "cat /etc/passwd"
                     sh "whoami"
@@ -162,6 +165,10 @@ pipeline {
             steps {
                 script {
                     sh "ls -ltr /"
+                    sh "ls -ltr /home"
+                    sh "ls -ltr /home/jenkins"
+                    sh "ls -ltr /home/jenkins/agent"                 
+
                     sh "df -h"
                     sh "cat /etc/passwd"
                     sh "whoami"
@@ -226,6 +233,10 @@ pipeline {
             steps {
                 script {
                     sh "ls -ltr /"
+                    sh "ls -ltr /home"
+                    sh "ls -ltr /home/jenkins"
+                    sh "ls -ltr /home/jenkins/agent"                 
+
                     sh "df -h"
                     sh "cat /etc/passwd"
                     sh "whoami"
