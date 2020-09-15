@@ -98,7 +98,6 @@ pipeline {
         kubernetes {
             label "premerge-init-${BUILD_TAG}"
             cloud 'sc-ipp-blossom-prod'
-            workspaceVolume persistentVolumeClaimWorkspaceVolume(claimName: 'sw-gpu-spark-pvc', readOnly: false)
         }
     }
 
