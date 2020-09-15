@@ -29,6 +29,9 @@ def pluginDockerBuild = """
 apiVersion: v1
 kind: Pod
 spec:
+  securityContext:
+    runAsUser: 0
+    runAsGroup: 0
   containers:
   - name: plugin-docker
     image: docker:19.03.12
@@ -61,6 +64,9 @@ def pluginPremerge = """
 apiVersion: v1
 kind: Pod
 spec:
+  securityContext:
+    runAsUser: 0
+    runAsGroup: 0
   containers:
   - name: plugin-premerge
     image: IMAGE_PREMERGE
@@ -131,7 +137,6 @@ pipeline {
                     sh "ls -ltr /home/jenkins"
                     sh "ls -ltr /home/jenkins/agent"                 
                     sh "df -h"
-                    sh "cat /etc/passwd"
                     sh "whoami"
                     githubHelper = GithubHelper.getInstance("${GITHUB_TOKEN}", githubData)
                     def title = githubHelper.getIssue().title
@@ -171,7 +176,6 @@ pipeline {
                     sh "ls -ltr /home/jenkins/agent"                 
 
                     sh "df -h"
-                    sh "cat /etc/passwd"
                     sh "whoami"
 
                     githubHelper.updateCommitStatus("$BUILD_URL", "Running", GitHubCommitState.PENDING)
