@@ -98,6 +98,7 @@ pipeline {
         kubernetes {
             label "premerge-init-${BUILD_TAG}"
             cloud 'sc-ipp-blossom-prod'
+            workspaceVolume persistentVolumeClaimWorkspaceVolume(claimName: 'sw-gpu-spark-pvc', readOnly: false)
         }
     }
 
@@ -151,6 +152,7 @@ pipeline {
                     label "premerge-docker-${BUILD_TAG}"
                     cloud 'sc-ipp-blossom-prod'
                     yaml "$pluginDockerBuild"
+                    workspaceVolume persistentVolumeClaimWorkspaceVolume(claimName: 'sw-gpu-spark-pvc', readOnly: false)
                 }
             }
 
@@ -209,6 +211,7 @@ pipeline {
                     label "premerge-test-${BUILD_TAG}"
                     cloud 'sc-ipp-blossom-prod'
                     yaml "$pluginPremerge"
+                    workspaceVolume persistentVolumeClaimWorkspaceVolume(claimName: 'sw-gpu-spark-pvc', readOnly: false)
                 }
             }
 
