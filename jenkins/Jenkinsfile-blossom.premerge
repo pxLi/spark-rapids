@@ -29,7 +29,7 @@ def pluginDockerBuild = """
 apiVersion: v1
 kind: Pod
 spec:
-  securityContext: # ref: https://github.com/kubernetes/examples/issues/260 
+  securityContext: # ref: https://github.com/kubernetes/examples/issues/260
     runAsUser: 0
     runAsGroup: 0
   containers:
@@ -224,20 +224,6 @@ pipeline {
 
             steps {
                 script {
-//                    checkout(
-//                            changelog: false,
-//                            poll: true,
-//                            scm: [
-//                                    $class: 'GitSCM', branches: [[name: "pr/" + githubHelper.getPRNumber()]],
-//                                    doGenerateSubmoduleConfigurations: false,
-//                                    submoduleCfg: [],
-//                                    userRemoteConfigs: [[
-//                                        credentialsId: 'github-token',
-//                                        url: githubHelper.getCloneUrl(),
-//                                        refspec: '+refs/pull/*/head:refs/remotes/origin/pr/*']]
-//                            ]
-//                    )
-
                     container('plugin-premerge') {
                         sh "$PREMERGE_SCRIPT"
                         step([$class                : 'JacocoPublisher',
