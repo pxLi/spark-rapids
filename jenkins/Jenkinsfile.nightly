@@ -75,6 +75,7 @@ pipeline {
 //                        -v ${HOME}/.zinc:${HOME}/.zinc:rw") {
 //                        sh "jenkins/spark-nightly-build.sh"
 //                    }
+                    sh "hello"
                 }
             }
         } // end of Ubuntu16 CUDA10.1
