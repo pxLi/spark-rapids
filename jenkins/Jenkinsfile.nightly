@@ -75,7 +75,8 @@ pipeline {
 //                        -v ${HOME}/.zinc:${HOME}/.zinc:rw") {
 //                        sh "jenkins/spark-nightly-build.sh"
 //                    }
-                    sh "hello"
+                    sh "echo hello"
+                    sh "sleep 10"
                 }
             }
         } // end of Ubuntu16 CUDA10.1
@@ -95,9 +96,9 @@ pipeline {
                     }
                 }
 
-                stage('peixin-rapids-test-1') {
+                stage('peixin-rapids-test-2') {
                     steps {
-                        build(job: 'peixin-rapids-test-1',
+                        build(job: 'peixin-rapids-test-2',
                                 propagate: false,
                                 parameters: [string(name: 'REF', value: 'branch-0.3')])
                     }
