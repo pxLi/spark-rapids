@@ -190,7 +190,7 @@ pipeline {
                         uploadDocker(IMAGE_PREMERGE)
 
                         pluginPremerge = pluginPremerge.replace("IMAGE_PREMERGE", "$IMAGE_PREMERGE")
-                        pluginPremerge = pluginPremerge.replace("GPU_TYPES", "$GPU_TYPES")
+                        pluginPremerge = pluginPremerge.replace("GPU_TYPE", "$GPU_TYPE")
                     }
                 }
             }
