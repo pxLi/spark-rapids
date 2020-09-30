@@ -17,6 +17,9 @@
 
 set -ex
 
+whoami
+echo $HOME
+
 nvidia-smi
 
 . jenkins/version-def.sh
