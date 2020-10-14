@@ -92,10 +92,10 @@ jobs:
             --blackduck.api.token="${{ secrets.BLACKDUCK_API_TOKEN }}" 
             --detect.maven.build.command="-pl='$PROJECTS -am'"
             --detect.force.success=false
-            --detect.maven.included.scopes=compile
             --detect.parallel.processors=0
             --detect.project.name="${{ github.repository }}"
             --detect.project.version.name="${{ github.run_id }}"
+#            --detect.maven.included.scopes=compile
              
   vulnerability-check-trigger:
     name: Vulnerability check & start ci job
