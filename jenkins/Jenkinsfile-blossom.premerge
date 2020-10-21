@@ -136,7 +136,6 @@ pipeline {
                         skipped = true
                         return
                     }
-                    sleep(300)
                 }
             }
         } // end of Init githubHelper
