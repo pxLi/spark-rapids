@@ -34,7 +34,7 @@ jobs:
       - name: auto-merge job
         uses: ./.github/workflows/auto-merge
         env:
-          OWNER: NVIDIA
+          OWNER: pxLi
           REPO_NAME: spark-rapids
           HEAD: branch-0.3
           BASE: branch-0.4
