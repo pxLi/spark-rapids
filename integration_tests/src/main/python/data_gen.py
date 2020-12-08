@@ -492,7 +492,7 @@ class TimestampGen(DataGen):
         if (self._epoch >= start and self._epoch <= end):
             self.with_special_case(self._epoch)
 
-    _epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)
+    _epoch = datetime(1970, 1, 1, 0, 0, 1, 0, tzinfo=timezone.utc)
     _ms = timedelta(milliseconds=1)
     def _to_ms_since_epoch(self, val):
         return int((val - self._epoch)/self._ms)
