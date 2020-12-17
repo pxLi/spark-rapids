@@ -117,7 +117,7 @@ pipeline {
         GITHUB_TOKEN = credentials("github-token")
         URM_CREDS = credentials("urm_creds")
         URM_URL = "https://${ArtifactoryConstants.ARTIFACTORY_NAME}/artifactory/sw-spark-maven"
-        GPU_TYPE = credentials("pre-merge_gpu_type")
+        GPU_TYPE = 'Tesla_V100_PCIE_32GB'
         PVC = credentials("pvc")
         CUSTOM_WORKSPACE = "/home/jenkins/agent/workspace/${BUILD_TAG}"
     }
