@@ -110,7 +110,7 @@ pipeline {
                                     userRemoteConfigs: [[
                                         credentialsId: 'github-token',
                                         url: githubHelper.getCloneUrl(),
-                                        refspec: '+refs/pull/*/head:refs/remotes/origin/pr/*']]
+                                        refspec: '+refs/pull/*/merge:refs/remotes/origin/pr/*']]
                             ]
                     )
 
