@@ -89,7 +89,7 @@ pipeline {
 
             agent {
                 kubernetes {
-                    label "premerge-docker-${BUILD_TAG}"
+                    label "premerge-docker-pxli-${BUILD_TAG}"
                     cloud 'sc-ipp-blossom-prod'
                     yaml pod.getDockerBuildYAML()
                     workspaceVolume persistentVolumeClaimWorkspaceVolume(claimName: "${PVC}", readOnly: false)
