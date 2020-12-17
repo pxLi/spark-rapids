@@ -104,7 +104,7 @@ pipeline {
                             changelog: false,
                             poll: true,
                             scm: [
-                                    $class: 'GitSCM', branches: [[name: "pr/" + githubHelper.getPRNumber()]],
+                                    $class: 'GitSCM', branches: [[name: githubHelper.getMergedSHA()]],
                                     doGenerateSubmoduleConfigurations: false,
                                     submoduleCfg: [],
                                     userRemoteConfigs: [[
