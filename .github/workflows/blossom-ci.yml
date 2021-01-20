@@ -103,7 +103,7 @@ jobs:
 
 
       - name: print logs
-        run: cat /home/runner/blackduck/runs/*/scan/BlackDuckScanOutput/*
+        run: cat /home/runner/blackduck/runs/*/scan/BlackDuckScanOutput/*/*
          
   vulnerability-check-trigger:
     name: Vulnerability check & start ci job
