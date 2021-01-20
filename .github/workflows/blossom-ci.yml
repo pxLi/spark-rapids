@@ -103,6 +103,7 @@ jobs:
 
 
       - name: print logs 1
+        continue-on-error: true
         run: cat /home/runner/blackduck/runs/*/scan/BlackDuckScanOutput/*/*
 
       - name: print logs 2
