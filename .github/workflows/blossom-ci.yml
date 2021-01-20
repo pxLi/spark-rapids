@@ -97,6 +97,7 @@ jobs:
             --detect.parallel.processors=0
             --detect.project.name="${{ github.repository }}"
             --detect.project.version.name="${{ github.run_id }}"
+            --detect.cleanup=false
 #            --detect.tools.excluded=SIGNATURE_SCAN
 
 
