@@ -102,25 +102,25 @@ jobs:
 
 
 
-      - name: print logs 1
-        continue-on-error: true
-        run: cat /home/runner/blackduck/runs/*/scan/BlackDuckScanOutput/*/*
+#       - name: print logs 1
+#         continue-on-error: true
+#         run: cat /home/runner/blackduck/runs/*/scan/BlackDuckScanOutput/*/*
 
-      - name: print logs 2
-        run: cat /home/runner/blackduck/runs/*/scan/BlackDuckScanOutput/*/log/*
+#       - name: print logs 2
+#         run: cat /home/runner/blackduck/runs/*/scan/BlackDuckScanOutput/*/log/*
 
-  vulnerability-check-trigger:
-    name: Vulnerability check & start ci job
-    needs: [vulnerability-scan-job]
-    runs-on: [self-hosted, linux, blossom]
-    steps:
-      - name: Check for new issue in vulnerability scan & start ci job
-        run: blossom-ci
-        env:
-          OPERATION: 'SCAN-CHECK-CI-JOB-START'
-          VERSION: '1'
-          BLACKDUCK_TOKEN: "${{ secrets.BLACKDUCK_API_TOKEN }}"
-          BLACKDUCK_URL: "${{ secrets.BLACKDUCK_URL }}"
-          BLACKDUCK_PROJECT_VERSION: "${{ github.run_id }}"
-          CI_SERVER: ${{ secrets.CI_SERVER }}
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#   vulnerability-check-trigger:
+#     name: Vulnerability check & start ci job
+#     needs: [vulnerability-scan-job]
+#     runs-on: [self-hosted, linux, blossom]
+#     steps:
+#       - name: Check for new issue in vulnerability scan & start ci job
+#         run: blossom-ci
+#         env:
+#           OPERATION: 'SCAN-CHECK-CI-JOB-START'
+#           VERSION: '1'
+#           BLACKDUCK_TOKEN: "${{ secrets.BLACKDUCK_API_TOKEN }}"
+#           BLACKDUCK_URL: "${{ secrets.BLACKDUCK_URL }}"
+#           BLACKDUCK_PROJECT_VERSION: "${{ github.run_id }}"
+#           CI_SERVER: ${{ secrets.CI_SERVER }}
+#           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
