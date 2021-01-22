@@ -86,7 +86,7 @@ jobs:
       - name: Run synopsys detect
         id: scan_result
         uses: blackducksoftware/github-action@2.0.1
-        continue-on-error: true
+#        continue-on-error: true
         with:
           args: >
             --blackduck.url="https://${{ secrets.BLACKDUCK_URL }}"
