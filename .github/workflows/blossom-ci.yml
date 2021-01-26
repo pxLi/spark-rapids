@@ -38,14 +38,11 @@ jobs:
     steps:
       - name: Get pull request data
         id: pull_request_data
-        uses: octokit/request-action@v2.0.24
+        uses: octokit/request-action@v2.0.23
         with:
           route: 'GET /repos/{repository}/pulls/{issue_id}'
           repository: ${{ github.repository }}
           issue_id: ${{ github.event.issue.number }}
-          mediaType: | # The | is significant!
-            previews: 
-              - antiope
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
