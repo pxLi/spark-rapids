@@ -38,7 +38,7 @@ jobs:
     steps:
       - name: Get pull request data
         id: pull_request_data
-        uses: octokit/request-action@v2.x
+        uses: octokit/request-action@v2.0.24
         with:
           route: 'GET /repos/{repository}/pulls/{issue_id}'
           repository: ${{ github.repository }}
