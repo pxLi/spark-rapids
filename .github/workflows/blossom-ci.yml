@@ -43,6 +43,9 @@ jobs:
           route: 'GET /repos/{repository}/pulls/{issue_id}'
           repository: ${{ github.repository }}
           issue_id: ${{ github.event.issue.number }}
+          mediaType: | # The | is significant!
+            previews: 
+              - antiope
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
