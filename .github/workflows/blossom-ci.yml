@@ -38,7 +38,7 @@ jobs:
     steps:
       - name: Get pull request data
         id: pull_request_data
-        uses: octokit/request-action@v2.0.23
+        uses: octokit/request-action@v2.x
         with:
           route: GET /repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}
         env:
@@ -51,9 +51,9 @@ jobs:
         run: echo "$REF-${{ github.run_id }}"
 
       - name: Update status
-        uses: octokit/request-action@v2.0.24
+        uses: octokit/request-action@v2.x
         with:
-          route: POST /repos/${{ github.repository }}/statuses/:sha
+          route: POST /repos/${{ github.repository }}/statuses/{sha}
           sha: ${{ fromJson(steps.pull_request_data.outputs.data).head.sha }}
           target_url: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           description: "vulnerability scan running"
