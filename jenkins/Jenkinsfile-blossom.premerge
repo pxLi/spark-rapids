@@ -157,7 +157,7 @@ pipeline {
             steps {
                 script {
                     container('gpu') {
-                        sh "TEST_PARALLEL=6 $PREMERGE_SCRIPT"
+                        sh "$PREMERGE_SCRIPT"
                         step([$class                : 'JacocoPublisher',
                               execPattern           : '**/target/jacoco.exec',
                               classPattern          : 'target/jacoco_classes/',
