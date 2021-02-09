@@ -154,6 +154,10 @@ pipeline {
                 }
             }
 
+            environment {
+                TEST_PARALLEL = 6
+            }
+
             steps {
                 script {
                     container('gpu') {
