@@ -191,7 +191,8 @@
             </goals>
             <configuration>
               <executable>bash</executable>
-              <commandlineArgs>-c '[[ ! -z "$(git status --porcelain)" ]] &amp;&amp; { echo "found modified files: $(git status --porcelain)"; exit 1;}'</commandlineArgs>
+<!--              <commandlineArgs>-c '[[ ! -z "$(git status &#45;&#45;porcelain)" ]] &amp;&amp; { echo -e "found modified files:\n$(git status &#45;&#45;porcelain)"; exit 1;}'</commandlineArgs>-->
+              <commandlineArgs>-c 'export MODIFIED=$(git status --porcelain | grep "^ M"); [[ ! -z $MODIFIED ]] &amp;&amp; { echo -e "found modified files:\n$MODIFIED"; exit 1;}'</commandlineArgs>
             </configuration>
           </execution>
         </executions>
