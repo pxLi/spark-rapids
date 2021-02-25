@@ -180,6 +180,23 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>if_modified_files</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>bash</executable>
+              <commandlineArgs>-c '[[ ! -z "$(git status --porcelain)" ]] &amp;&amp; { echo "found modified files: $(git status --porcelain)"; exit 1;}'</commandlineArgs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
         <configuration>
