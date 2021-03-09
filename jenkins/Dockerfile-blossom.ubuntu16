@@ -39,4 +39,3 @@ RUN ln -s /usr/bin/python3.8 /usr/bin/python
 RUN python -m pip install pytest sre_yield requests pandas pyarrow findspark pytest-xdist
 
 RUN apt install -y inetutils-ping expect
-
