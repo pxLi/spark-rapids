@@ -579,16 +579,15 @@
                         </goals>
                         <configuration>
                             <append>true</append>
-                            <excludes>
-                                <exclude>${rapids.shade.package}.*</exclude>
-                            </excludes>
-                            <includes>
-                                <include>ai.rapids.cudf.*</include>
-                                <include>com.nvidia.spark.*</include>
-                                <include>org.apache.spark.sql.rapids.*</include>
-                            </includes>
                         </configuration>
                     </execution>
+		    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+		        </goals>
+		    </execution>
                 </executions>
             </plugin>
         </plugins>
