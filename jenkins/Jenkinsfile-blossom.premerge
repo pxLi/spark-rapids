@@ -141,7 +141,7 @@ pipeline {
                         }
 
 
-                     pluginPremerge = pod.getGPUYAML("${IMAGE_PREMERGE}", "${env.PRE-MERGE_GPU_TYPE}", '8', '32Gi') // cpu: 8, memory: 32Gi
+                     pluginPremerge = pod.getGPUYAML("${IMAGE_PREMERGE}", "${env.PRE_MERGE_GPU_TYPE}", '8', '32Gi') // cpu: 8, memory: 32Gi
                     }
                 }
             }
