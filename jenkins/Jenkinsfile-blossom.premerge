@@ -33,6 +33,8 @@ def PREMERGE_DOCKERFILE = 'jenkins/Dockerfile-blossom.ubuntu16'
 def IMAGE_PREMERGE // temp image for premerge test
 def PREMERGE_TAG
 def skipped = false
+ 
+def env = System.getenv()
 
 pipeline {
     agent {
@@ -141,7 +143,7 @@ pipeline {
                         }
 
 
-                        pluginPremerge = pod.getGPUYAML("${IMAGE_PREMERGE}", "${PRE-MERGE_GPU_TYPE}", '8', '32Gi') // cpu: 8, memory: 32Gi
+                        pluginPremerge = pod.getGPUYAML("${IMAGE_PREMERGE}", env['PRE-MERGE_GPU_TYPE'], '8', '32Gi') // cpu: 8, memory: 32Gi
                     }
                 }
             }
