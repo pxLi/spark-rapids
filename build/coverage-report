@@ -45,6 +45,6 @@ else
   ARGS=$(find . -name "jacoco.exec" -printf "%p ")
 fi
 # run the report
-java -jar "$JDEST" report --classfiles "$TMP_CLASS" --html "$HTML_LOC" $SOURCE_WITH_ARGS $ARGS
+java -jar "$JDEST" report --classfiles "$TMP_CLASS" --html "$HTML_LOC" --xml "$HTML_LOC/jacoco.xml" $SOURCE_WITH_ARGS $ARGS
 
 echo "The report is at file://"$(readlink -f "$HTML_LOC"/index.html)
