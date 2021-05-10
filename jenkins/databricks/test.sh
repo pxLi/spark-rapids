@@ -17,8 +17,6 @@
 
 set -ex
 
-conda install python=3.8 -y
-
 LOCAL_JAR_PATH=$1
 SPARK_CONF=$2
 

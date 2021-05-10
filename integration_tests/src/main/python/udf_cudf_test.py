@@ -53,6 +53,7 @@ large_data = list(map(lambda i: (i, i/1.0), range(1, 512))) * 2
 
 
 def _create_df(spark, data=large_data):
+    print("MMMMMMMMMMMMMMMMMMMM")
     return spark.createDataFrame(data, ("id", "v"))
 
 
@@ -94,6 +95,7 @@ def test_with_column(enable_cudf_udf, data):
         return df.withColumn("v1", _plus_one_cpu_func(df.v)).collect()
 
     def gpu_run(spark):
+        print("DDDDDDDDDDDDDDDDDDDDD")
         df = _create_df(spark, data)
         return df.withColumn("v1", _plus_one_gpu_func(df.v)).collect()
 
