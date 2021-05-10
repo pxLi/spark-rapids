@@ -270,6 +270,17 @@ trait GpuWindowInPandasExecBase extends UnaryExecNode with GpuExec {
       }
     }
 
+    framedExpressions.foreach(
+      e => {
+        logWarning("KKKKKKKKKKKK" + e._2.foreach(
+          a => {
+            logWarning("KKKKKKKKKKKK" + a.toString())
+            logWarning("KKKKKKKKKKKK" + a.treeString)
+          }
+        ))
+      }
+    )
+
     framedExpressions.toSeq.map {
       // Remove the function type string
       case ((_, frame), es) => (frame, es)
