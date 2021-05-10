@@ -45,6 +45,7 @@ object GpuBindReferences extends Logging {
       input: AttributeSeq): R = {
     val ret = expression.transform {
       case a: AttributeReference =>
+        logWarning(a.toString + "============>" + a.exprId)
         val ordinal = input.indexOf(a.exprId)
         if (ordinal == -1) {
           sys.error(s"Couldn't find $a in ${input.attrs.mkString("[", ",", "]")}")
@@ -69,7 +70,6 @@ object GpuBindReferences extends Logging {
       expressions: Seq[A],
       input: AttributeSeq): Seq[GpuExpression] = {
     // Force list to avoid recursive Java serialization of lazy list Seq implementation
-    input.attrs.foreach(a => logWarning(a.toString()))
     expressions.map(GpuBindReferences.bindGpuReference(_, input)).toList
   }
 
