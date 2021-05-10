@@ -58,6 +58,7 @@ case class GpuWindowInPandasExec(
     val allExpressions = windowFramesWithExpressions.map(_._2).flatten
     val references = allExpressions.zipWithIndex.map { case (e, i) =>
       // Results of window expressions will be on the right side of child's output
+      logWarning("<<<<<<<========", e.toString(), i.toString, child.output.size + i, e.dataType, e.nullable)
       GpuBoundReference(child.output.size + i, e.dataType, e.nullable)
     }
     val unboundToRefMap = allExpressions.zip(references).toMap
