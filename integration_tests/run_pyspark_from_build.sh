@@ -105,7 +105,7 @@ else
       "$LOCAL_ROOTDIR"/src/main/python)
 
     TEST_COMMON_OPTS=(-v
-          -rfExXs
+          -s
           "$TEST_TAGS"
           --std_input_path="$INPUT_PATH"/src/test/resources
           --color=yes
