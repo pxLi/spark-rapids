@@ -95,7 +95,6 @@ def test_with_column(enable_cudf_udf, data):
         return df.withColumn("v1", _plus_one_cpu_func(df.v)).collect()
 
     def gpu_run(spark):
-        print("DDDDDDDDDDDDDDDDDDDDD")
         df = _create_df(spark, data)
         return df.withColumn("v1", _plus_one_gpu_func(df.v)).collect()
 
@@ -294,6 +293,7 @@ def test_window(enable_cudf_udf):
         return df.withColumn('sum_v', _sum_cpu_func('v').over(w)).collect()
 
     def gpu_run(spark):
+        print("DDDDDDDDDDDDDDDDDDDDD")
         df = _create_df(spark)
         w = Window.partitionBy('id').rowsBetween(Window.unboundedPreceding, Window.unboundedFollowing)
         return df.withColumn('sum_v', _sum_gpu_func('v').over(w)).collect()
