@@ -45,7 +45,7 @@ object GpuBindReferences extends Logging {
       input: AttributeSeq): R = {
     val ret = expression.transform {
       case a: AttributeReference =>
-        logWarning(a.toString + "============>" + a.exprId)
+        logWarning(a.toString + "============>" + a.name + ", " + a.exprId + ", " + a.metadata + ", " + a.nullable + ", " + a.qualifier)
         val ordinal = input.indexOf(a.exprId)
         if (ordinal == -1) {
           sys.error(s"Couldn't find $a in ${input.attrs.mkString("[", ",", "]")}")
