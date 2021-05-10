@@ -49,9 +49,10 @@ case class GpuWindowInPandasExec(
 
   override def projectResult(joinedBatch: ColumnarBatch): ColumnarBatch = {
     // Project the data
-    withResource(joinedBatch) { joinBatch =>
-      GpuProjectExec.project(joinBatch, outReferences)
-    }
+//    withResource(joinedBatch) { joinBatch =>
+//      GpuProjectExec.project(joinBatch, outReferences)
+//    }
+    joinedBatch
   }
 
   private val outReferences = {
