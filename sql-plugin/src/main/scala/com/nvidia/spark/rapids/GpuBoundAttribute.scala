@@ -69,7 +69,7 @@ object GpuBindReferences extends Logging {
       expressions: Seq[A],
       input: AttributeSeq): Seq[GpuExpression] = {
     // Force list to avoid recursive Java serialization of lazy list Seq implementation
-    logWarning("===============================>>>>>>>" + input.toString)
+    input.attrs.foreach(a => logWarning(a.toString()))
     expressions.map(GpuBindReferences.bindGpuReference(_, input)).toList
   }
 
