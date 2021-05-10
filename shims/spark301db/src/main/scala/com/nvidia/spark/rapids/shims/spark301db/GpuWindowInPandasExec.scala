@@ -49,10 +49,10 @@ case class GpuWindowInPandasExec(
 
   override def projectResult(joinedBatch: ColumnarBatch): ColumnarBatch = {
     // Project the data
-//    withResource(joinedBatch) { joinBatch =>
-//      GpuProjectExec.project(joinBatch, outReferences)
-//    }
-    joinedBatch
+    withResource(joinedBatch) { joinBatch =>
+      GpuProjectExec.project(joinBatch, outReferences)
+    }
+//    joinedBatch
   }
 
   lazy private val outReferences = {
@@ -60,6 +60,7 @@ case class GpuWindowInPandasExec(
     val references = allExpressions.zipWithIndex.map { case (e, i) =>
       // Results of window expressions will be on the right side of child's output
       logWarning("<<<<<<<========" + e.toString() + "," + i.toString + "," + child.output.size + "," + e.dataType + "," + e.nullable)
+      logWarning("XxXXXXXXXXXXX" + child.treeString.toString + "|" + child.toString)
       GpuBoundReference(child.output.size + i, e.dataType, e.nullable)
     }
     val unboundToRefMap = allExpressions.zip(references).toMap
