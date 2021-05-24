@@ -22,7 +22,7 @@
  */
 
 @Library(['shared-libs', 'blossom-lib']) _
-@Library('blossom-github-lib-alex@upload_partial_logs')
+@Library('blossom-github-lib-alex@test_partial_log_upload')
 import ipp.blossom.*
 
 def pluginPremerge
@@ -165,6 +165,10 @@ pipeline {
                 }
             }
 
+            options {
+                timeout(time: 300, unit: 'SECONDS')
+            }
+
             steps {
                 script {
                     container('gpu') {
@@ -209,7 +213,7 @@ pipeline {
                     // hide GPU info
                     guardWords.add("nvidia-smi(?s)(.*?)(?=jenkins/version-def.sh)")
 
-                    def logPattern = "### BEGIN OF TEST LOG ###.*?### END OF TEST LOG ###"
+                    def logPattern = "### BEGIN OF TEST LOG ###.*### END OF TEST LOG ###"
 
                     githubHelper.uploadPartialLogs(this, env.JOB_NAME, env.BUILD_NUMBER, null, guardWords, logPattern)
 
