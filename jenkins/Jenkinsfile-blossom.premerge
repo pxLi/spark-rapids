@@ -22,7 +22,7 @@
  */
 
 @Library(['shared-libs', 'blossom-lib']) _
-@Library('blossom-github-lib@master')
+@Library('blossom-github-lib-alex@upload_partial_logs')
 import ipp.blossom.*
 
 def pluginPremerge
@@ -191,6 +191,28 @@ pipeline {
                 if (currentBuild.currentResult == "SUCCESS") {
                     githubHelper.updateCommitStatus("$BUILD_URL", "Success", GitHubCommitState.SUCCESS)
                 } else {
+                    // upload log only in case of build failure
+                    def guardWords = []
+
+                    // hide internal domain name
+                    guardWords.add("gitlab.*?\\.com")
+                    guardWords.add("urm.*?\\.com")
+
+                    // hide pvc and hostname info
+                    guardWords.add("AttachVolume.Attach.*(?=\\n)")
+                    guardWords.add("Successfully assigned.*(?=\\n)")
+                    guardWords.add("\\[FailedScheduling\\].*(?=\\n)")
+
+                    // hide pod spec details
+                    guardWords.add("apiVersion:(?s)(.*?)(?=Running on)")
+
+                    // hide GPU info
+                    guardWords.add("nvidia-smi(?s)(.*?)(?=jenkins/version-def.sh)")
+
+                    def logPattern = "### BEGIN OF TEST LOG ###.*?### END OF TEST LOG ###"
+
+                    githubHelper.uploadPartialLogs(this, env.JOB_NAME, env.BUILD_NUMBER, null, guardWords, logPattern)
+
                     githubHelper.updateCommitStatus("$BUILD_URL", "Fail", GitHubCommitState.FAILURE)
                 }
 
