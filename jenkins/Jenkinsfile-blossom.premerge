@@ -22,7 +22,7 @@
  */
 
 @Library(['shared-libs', 'blossom-lib']) _
-@Library('blossom-github-lib-alex@test_partial_log_upload')
+@Library('blossom-github-lib@master')
 import ipp.blossom.*
 
 def pluginPremerge
@@ -68,6 +68,8 @@ pipeline {
         stage("Init githubHelper") {
             steps {
                 script {
+                    println githubData
+                    println BUILD_URL
                     githubHelper = GithubHelper.getInstance("${GITHUB_TOKEN}", githubData)
                     githubHelper.updateCommitStatus("$BUILD_URL", "Running", GitHubCommitState.PENDING)
 
@@ -196,23 +198,7 @@ pipeline {
                     githubHelper.updateCommitStatus("$BUILD_URL", "Success", GitHubCommitState.SUCCESS)
                 } else {
                     // upload log only in case of build failure
-                    def guardWords = []
-
-                    // hide internal domain name
-                    guardWords.add("gitlab.*?\\.com")
-                    guardWords.add("urm.*?\\.com")
-
-                    // hide pvc and hostname info
-                    guardWords.add("AttachVolume.Attach.*(?=\\n)")
-                    guardWords.add("Successfully assigned.*(?=\\n)")
-                    guardWords.add("\\[FailedScheduling\\].*(?=\\n)")
-
-                    // hide pod spec details
-                    guardWords.add("apiVersion:(?s)(.*?)(?=Running on)")
-
-                    // hide GPU info
-                    guardWords.add("nvidia-smi(?s)(.*?)(?=jenkins/version-def.sh)")
-
+                    def guardWords = ["gitlab.*?\\.com", "urm.*?\\.com"]
                     def logPattern = "### BEGIN OF TEST LOG ###.*### END OF TEST LOG ###"
 
                     githubHelper.uploadPartialLogs(this, env.JOB_NAME, env.BUILD_NUMBER, null, guardWords, logPattern)
