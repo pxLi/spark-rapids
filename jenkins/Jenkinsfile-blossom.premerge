@@ -167,9 +167,9 @@ pipeline {
                 }
             }
 
-            options {
-                timeout(time: 300, unit: 'SECONDS')
-            }
+            // options {
+            //     timeout(time: 300, unit: 'SECONDS')
+            // }
 
             steps {
                 script {
