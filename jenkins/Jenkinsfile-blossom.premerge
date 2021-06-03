@@ -68,8 +68,6 @@ pipeline {
         stage("Init githubHelper") {
             steps {
                 script {
-                    println githubData
-                    println BUILD_URL
                     githubHelper = GithubHelper.getInstance("${GITHUB_TOKEN}", githubData)
                     githubHelper.updateCommitStatus("$BUILD_URL", "Running", GitHubCommitState.PENDING)
 
