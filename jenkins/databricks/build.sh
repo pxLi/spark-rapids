@@ -17,6 +17,8 @@
 
 set -e
 
+conda list
+
 SPARKSRCTGZ=$1
 # version of Apache Spark we are building against
 BASE_SPARK_VERSION=$2
