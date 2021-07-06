@@ -1,0 +1,106 @@
+#!/usr/local/env groovy
+/*
+ * Copyright (c) 2020-2021, NVIDIA CORPORATION.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ *
+ * Jenkinsfile to watch EMR cluster on AWS. If running more than threshold will generate email notification.
+ */
+@Library(['shared-libs', 'blossom-lib']) _
+
+def IMAGE = "${ArtifactoryConstants.ARTIFACTORY_NAME}/sw-spark-docker/plugin:dev-ubuntu18-cuda11.0-blossom-dev"
+
+pipeline {
+    agent {
+        kubernetes {
+            label "test-parallel-${BUILD_NUMBER}"
+            cloud 'sc-ipp-blossom-prod'
+        }
+    }
+
+    options {
+        ansiColor('xterm')
+        timeout(time: 2, unit: 'HOURS')
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+    }
+
+    parameters {
+        string(name: 'GPU_POOL', defaultValue: 'RESERVED_POOL', description: 'GPU pool name')
+    }
+
+    environment {
+        MVN_URM_MIRROR = '-s jenkins/settings.xml -P mirror-apache-to-urm'
+        LIBCUDF_KERNEL_CACHE_PATH = '/tmp/.cudf'
+        URM_URL = "https://${ArtifactoryConstants.ARTIFACTORY_NAME}/artifactory/sw-spark-maven"
+        CUDA_CLASSIFIER = 'cuda11'
+    }
+
+    stages {
+        stage('Test Parallel for Pre-merge') {
+            parallel {
+                stage('Integration Test') {
+                    options {
+                        lock(label: "${params.GPU_POOL}", quantity: 1, variable: 'GPU_RESOURCE')
+                    }
+                    agent {
+                        kubernetes {
+                            label "test-parallel-it-${BUILD_TAG}"
+                            cloud 'sc-ipp-blossom-prod'
+                            yaml pod.getGPUYAML("${IMAGE}", "${env.GPU_RESOURCE}", '8', '32Gi')
+                        }
+                    }
+
+                    steps {
+                        container('gpu') {
+                            script {
+                                sh "cat /proc/cpuinfo; cat /proc/meminfo"
+                                sh "jenkins/spark-premerge-build.sh"
+                                step([$class                : 'JacocoPublisher',
+                                      execPattern           : '**/target/jacoco.exec',
+                                      classPattern          : 'target/jacoco_classes/',
+                                      sourcePattern         : 'shuffle-plugin/src/main/scala/,udf-compiler/src/main/scala/,sql-plugin/src/main/java/,sql-plugin/src/main/scala/,shims/spark311/src/main/scala/,shims/spark301db/src/main/scala/,shims/spark301/src/main/scala/,shims/spark302/src/main/scala/,shims/spark303/src/main/scala/,shims/spark304/src/main/scala/,shims/spark312/src/main/scala/,shims/spark313/src/main/scala/',
+                                      sourceInclusionPattern: '**/*.java,**/*.scala'
+                                ])
+                            }
+                        }
+                    }
+                }
+
+                stage('Unit Test') {
+                    options {
+                        lock(label: "${params.GPU_POOL}", quantity: 1, variable: 'GPU_RESOURCE')
+                    }
+                    agent {
+                        kubernetes {
+                            label "test-parallel-ut-${BUILD_TAG}"
+                            cloud 'sc-ipp-blossom-prod'
+                            yaml pod.getGPUYAML("${IMAGE}", "${env.GPU_RESOURCE}", '8', '32Gi')
+                        }
+                    }
+
+                    steps {
+                        container('gpu') {
+                            script {
+                                sh "cat /proc/cpuinfo; cat /proc/meminfo"
+                                sh "jenkins/spark-premerge-build-ut.sh"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -19,6 +19,13 @@ set -ex
 
 nvidia-smi
 
+function on_exit {
+    echo '### END OF TEST LOG ###'
+}
+trap on_exit EXIT
+
+echo '### BEGIN OF TEST LOG ###'
+
 . jenkins/version-def.sh
 
 # get merge BASE from merged pull request. Log message e.g. "Merge HEAD into BASE"
@@ -37,27 +44,29 @@ rm -rf $ARTF_ROOT && mkdir -p $ARTF_ROOT
 $MVN_GET_CMD \
     -DgroupId=org.apache -DartifactId=spark -Dversion=$SPARK_VER -Dclassifier=bin-hadoop3.2 -Dpackaging=tgz
 
-export SPARK_HOME="$ARTF_ROOT/spark-$SPARK_VER-bin-hadoop3.2"
-export PATH="$SPARK_HOME/bin:$SPARK_HOME/sbin:$PATH"
-tar zxf $SPARK_HOME.tgz -C $ARTF_ROOT && \
-    rm -f $SPARK_HOME.tgz
+# export SPARK_HOME="$ARTF_ROOT/spark-$SPARK_VER-bin-hadoop3.2"
+# export PATH="$SPARK_HOME/bin:$SPARK_HOME/sbin:$PATH"
+# tar zxf $SPARK_HOME.tgz -C $ARTF_ROOT && \
+#     rm -f $SPARK_HOME.tgz
 
-mvn -U -B $MVN_URM_MIRROR '-P!snapshot-shims,pre-merge' clean verify -Dpytest.TEST_TAGS='' \
-    -Dpytest.TEST_TYPE="pre-commit" -Dpytest.TEST_PARALLEL=4 -Dcuda.version=$CUDA_CLASSIFIER
+# mvn -U -B $MVN_URM_MIRROR '-P!snapshot-shims,pre-merge' clean verify -Dpytest.TEST_TAGS='' \
+    # -Dpytest.TEST_TYPE="pre-commit" -Dpytest.TEST_PARALLEL=4 -Dcuda.version=$CUDA_CLASSIFIER
 # Run the unit tests for other Spark versions but dont run full python integration tests
 # NOT ALL TESTS NEEDED FOR PREMERGE
-# Just test one 3.0.X version (base version covers this) and one 3.1.X version.
-# All others shims test should be covered in nightly pipelines
-# env -u SPARK_HOME mvn -U -B $MVN_URM_MIRROR -Pspark313tests,snapshot-shims test -Dpytest.TEST_TAGS='' -Dcuda.version=$CUDA_CLASSIFIER
+# Test latest stable and snapshot shims for a spark minor versions. All others shims test should be covered in nightly pipelines
+env -u SPARK_HOME mvn -U -B $MVN_URM_MIRROR -Pspark303tests,snapshot-shims test -Dpytest.TEST_TAGS='' -Dcuda.version=$CUDA_CLASSIFIER
+env -u SPARK_HOME mvn -U -B $MVN_URM_MIRROR -Pspark304tests,snapshot-shims test -Dpytest.TEST_TAGS='' -Dcuda.version=$CUDA_CLASSIFIER
+env -u SPARK_HOME mvn -U -B $MVN_URM_MIRROR -Pspark312tests,snapshot-shims test -Dpytest.TEST_TAGS='' -Dcuda.version=$CUDA_CLASSIFIER
+env -u SPARK_HOME mvn -U -B $MVN_URM_MIRROR -Pspark313tests,snapshot-shims test -Dpytest.TEST_TAGS='' -Dcuda.version=$CUDA_CLASSIFIER
 # Disabled until Spark 3.2 source incompatibility fixed, see https://github.com/NVIDIA/spark-rapids/issues/2052
 #env -u SPARK_HOME mvn -U -B $MVN_URM_MIRROR -Pspark320tests,snapshot-shims test -Dpytest.TEST_TAGS='' -Dcuda.version=$CUDA_CLASSIFIER
 
 # The jacoco coverage should have been collected, but because of how the shade plugin
 # works and jacoco we need to clean some things up so jacoco will only report for the
 # things we care about
-mkdir -p target/jacoco_classes/
-FILE=$(ls dist/target/rapids-4-spark_2.12-*.jar | grep -v test | xargs readlink -f)
-pushd target/jacoco_classes/
-jar xf $FILE
-rm -rf com/nvidia/shaded/ org/openucx/
-popd
+# mkdir -p target/jacoco_classes/
+# FILE=$(ls dist/target/rapids-4-spark_2.12-*.jar | grep -v test | xargs readlink -f)
+# pushd target/jacoco_classes/
+# jar xf $FILE
+# rm -rf com/nvidia/shaded/ org/openucx/
+# popd
