@@ -25,6 +25,6 @@ base=$(conda info --base)
 conda create -y -n mamba -c conda-forge mamba
 pip uninstall -y pyarrow
 ${base}/envs/mamba/bin/mamba remove -y c-ares zstd libprotobuf pandas
-${base}/envs/mamba/bin/mamba install -y pyarrow=1.0.1 -c conda-forge
-${base}/envs/mamba/bin/mamba install -y -c rapidsai -c rapidsai-nightly -c nvidia -c conda-forge -c defaults cudf=$CUDF_VER cudatoolkit=11.0
+#${base}/envs/mamba/bin/mamba install -y pyarrow=1.0.1 -c conda-forge
+${base}/envs/mamba/bin/mamba install -y -c rapidsai -c rapidsai-nightly -c nvidia -c conda-forge -c defaults cudf=$CUDF_VER #cudatoolkit=11.0
 conda env remove -n mamba
