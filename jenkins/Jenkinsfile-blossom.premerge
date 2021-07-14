@@ -47,6 +47,7 @@ pipeline {
         ansiColor('xterm')
         buildDiscarder(logRotator(numToKeepStr: '50'))
         skipDefaultCheckout true
+        # extra line
         timeout(time: 180, unit: 'MINUTES') # fake comment
     }
 
