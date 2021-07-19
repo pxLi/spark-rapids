@@ -152,14 +152,15 @@ pipeline {
 
         // TODO: support parallel testing for different spark versions
         stage('Premerge Test') {
-            parallel {
-                when {
-                    beforeAgent true
-                    beforeOptions true
-                    expression {
-                        !skipped
-                    }
+            when {
+                beforeAgent true
+                beforeOptions true
+                expression {
+                    !skipped
                 }
+            }
+
+            parallel {
                 stage('Integration Test') {
                     options {
                         // We have to use params to pass the resource label in options block,
