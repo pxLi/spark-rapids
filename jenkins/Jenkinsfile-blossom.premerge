@@ -23,7 +23,7 @@
 
 @Library(['shared-libs', 'blossom-lib']) _
 // @Library('blossom-github-lib@master')
-@Library('blossom-github-lib-alex@nvbug-3339178')
+@Library('blossom-github-lib@nvbug-3339178')
 import ipp.blossom.*
 
 def githubHelper // blossom github helper
