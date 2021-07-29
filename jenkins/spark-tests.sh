@@ -69,9 +69,9 @@ SPARK_TASK_MAXFAILURES=1
 export BASE_SPARK_SUBMIT_ARGS="$BASE_SPARK_SUBMIT_ARGS \
     --master spark://$HOSTNAME:7077 \
     --conf spark.driver.extraClassPath=${CUDF_JAR}:${RAPIDS_PLUGIN_JAR}:${RAPIDS_UDF_JAR} \
-    --conf spark.executor.extraClassPath=${CUDF_JAR}:${RAPIDS_PLUGIN_JAR}:${RAPIDS_UDF_JAR} \
-    --conf spark.driver.extraJavaOptions='-ea\ -Duser.timezone=UTC' \
-    --conf spark.executor.extraJavaOptions='-ea\ -Duser.timezone=UTC'"
+    --conf spark.executor.extraClassPath=${CUDF_JAR}:${RAPIDS_PLUGIN_JAR}:${RAPIDS_UDF_JAR} "
+#    --conf spark.driver.extraJavaOptions=-ea\ -Duser.timezone=UTC \
+#    --conf spark.executor.extraJavaOptions=-ea\ -Duser.timezone=UTC"
 #    --executor-memory 12G \
 #    --total-executor-cores 6 \
 #    --conf spark.sql.shuffle.partitions=12 \
