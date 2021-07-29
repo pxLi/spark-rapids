@@ -102,6 +102,7 @@ TEST_TYPE="nightly"
 spark-submit $BASE_SPARK_SUBMIT_ARGS --jars $RAPIDS_TEST_JAR ./runtests.py -v -rfExXs \
   --std_input_path="$WORKSPACE/integration_tests/src/test/resources/" --test_type=$TEST_TYPE -k orc_test
 
+#TEST_PARALLEL=5
 #SPARK_SUBMIT_FLAGS=="--executor-memory 12G \
 #    --total-executor-cores 6 \
 #    --conf spark.sql.shuffle.partitions=12 \
