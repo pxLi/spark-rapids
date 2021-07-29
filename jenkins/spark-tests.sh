@@ -113,7 +113,7 @@ SPARK_SUBMIT_FLAGS=="--executor-memory 12G \
     --conf spark.executor.extraJavaOptions=-Duser.timezone=UTC \
     --conf spark.sql.session.timeZone=UTC"
 
-SPARK_HOME="$ARTF_ROOT/spark-$SPARK_VER-bin-hadoop3.2" LOCAL_JAR_PATH=$ARTF_ROOT ./run_pyspark_from_build.sh -k orc_test
+SPARK_HOME="$ARTF_ROOT/spark-$SPARK_VER-bin-hadoop3.2" LOCAL_JAR_PATH=$ARTF_ROOT ./run_pyspark_from_build.sh --test_type=nightly -k orc_test
 
 #spark-submit $BASE_SPARK_SUBMIT_ARGS $CUDF_UDF_TEST_ARGS --jars $RAPIDS_TEST_JAR ./runtests.py -m "cudf_udf" -v -rfExXs --cudf_udf --test_type=$TEST_TYPE
 #only run cache tests with our serializer in nightly test for Spark version >= 3.1.1
