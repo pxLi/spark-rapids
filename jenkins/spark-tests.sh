@@ -90,17 +90,20 @@ CUDF_UDF_TEST_ARGS="--conf spark.rapids.memory.gpu.allocFraction=0.1 \
 export PATH="$SPARK_HOME/bin:$SPARK_HOME/sbin:$PATH"
 
 #stop and restart SPARK ETL
-stop-slave.sh
-stop-master.sh
-start-master.sh
-start-slave.sh spark://$HOSTNAME:7077
-jps
+#stop-slave.sh
+#stop-master.sh
+#start-master.sh
+#start-slave.sh spark://$HOSTNAME:7077
+#jps
 
 echo "----------------------------START TEST------------------------------------"
 pushd $RAPIDS_INT_TESTS_HOME
 TEST_TYPE="nightly"
-spark-submit $BASE_SPARK_SUBMIT_ARGS --jars $RAPIDS_TEST_JAR ./runtests.py -v -rfExXs \
-  --std_input_path="$WORKSPACE/integration_tests/src/test/resources/" --test_type=$TEST_TYPE -k orc_test
+#spark-submit $BASE_SPARK_SUBMIT_ARGS --jars $RAPIDS_TEST_JAR ./runtests.py -v -rfExXs \
+#  --std_input_path="$WORKSPACE/integration_tests/src/test/resources/" --test_type=$TEST_TYPE -k orc_test
+
+LOCAL_JAR_PATH=$ARTF_ROOT ./run_pyspark_from_build.sh -k orc_test
+
 #spark-submit $BASE_SPARK_SUBMIT_ARGS $CUDF_UDF_TEST_ARGS --jars $RAPIDS_TEST_JAR ./runtests.py -m "cudf_udf" -v -rfExXs --cudf_udf --test_type=$TEST_TYPE
 #only run cache tests with our serializer in nightly test for Spark version >= 3.1.1
 #if [[ "$IS_SPARK_311_OR_LATER" -eq "1" ]]; then
@@ -108,5 +111,5 @@ spark-submit $BASE_SPARK_SUBMIT_ARGS --jars $RAPIDS_TEST_JAR ./runtests.py -v -r
 #  ./runtests.py -v -rfExXs --std_input_path="$WORKSPACE/integration_tests/src/test/resources/" -k cache_test.py -x
 #fi
 popd
-stop-slave.sh
-stop-master.sh
+#stop-slave.sh
+#stop-master.sh
