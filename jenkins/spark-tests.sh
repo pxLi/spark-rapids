@@ -68,16 +68,16 @@ SPARK_TASK_MAXFAILURES=1
 
 export BASE_SPARK_SUBMIT_ARGS="$BASE_SPARK_SUBMIT_ARGS \
     --master spark://$HOSTNAME:7077 \
-    --executor-memory 12G \
-    --total-executor-cores 6 \
-    --conf spark.sql.shuffle.partitions=12 \
-    --conf spark.task.maxFailures=$SPARK_TASK_MAXFAILURES \
-    --conf spark.dynamicAllocation.enabled=false \
     --conf spark.driver.extraClassPath=${CUDF_JAR}:${RAPIDS_PLUGIN_JAR}:${RAPIDS_UDF_JAR} \
     --conf spark.executor.extraClassPath=${CUDF_JAR}:${RAPIDS_PLUGIN_JAR}:${RAPIDS_UDF_JAR} \
-    --conf spark.driver.extraJavaOptions=-Duser.timezone=UTC \
-    --conf spark.executor.extraJavaOptions=-Duser.timezone=UTC \
-    --conf spark.sql.session.timeZone=UTC"
+    --conf spark.driver.extraJavaOptions=-ea -Duser.timezone=UTC \
+    --conf spark.executor.extraJavaOptions=-ea -Duser.timezone=UTC"
+#    --executor-memory 12G \
+#    --total-executor-cores 6 \
+#    --conf spark.sql.shuffle.partitions=12 \
+#    --conf spark.task.maxFailures=$SPARK_TASK_MAXFAILURES \
+#    --conf spark.dynamicAllocation.enabled=false \
+#    --conf spark.sql.session.timeZone=UTC"
 
 CUDF_UDF_TEST_ARGS="--conf spark.rapids.memory.gpu.allocFraction=0.1 \
     --conf spark.rapids.memory.gpu.minAllocFraction=0 \
@@ -99,8 +99,9 @@ jps
 echo "----------------------------START TEST------------------------------------"
 pushd $RAPIDS_INT_TESTS_HOME
 TEST_TYPE="nightly"
-#spark-submit $BASE_SPARK_SUBMIT_ARGS --jars $RAPIDS_TEST_JAR ./runtests.py -v -rfExXs \
-#  --std_input_path="$WORKSPACE/integration_tests/src/test/resources/" --test_type=$TEST_TYPE -k orc_test
+PYSP_TEST_spark_master=spark://$HOSTNAME:7077
+spark-submit $BASE_SPARK_SUBMIT_ARGS --jars $RAPIDS_TEST_JAR ./runtests.py -v -rfExXs \
+  --std_input_path="$WORKSPACE/integration_tests/src/test/resources/" --test_type=$TEST_TYPE -k orc_test
 
 TEST_PARALLEL=0
 #SPARK_SUBMIT_FLAGS=="--executor-memory 12G \
@@ -114,7 +115,7 @@ TEST_PARALLEL=0
 #    --conf spark.executor.extraJavaOptions=-Duser.timezone=UTC \
 #    --conf spark.sql.session.timeZone=UTC"
 
-LOCAL_JAR_PATH=$ARTF_ROOT ./run_pyspark_from_build.sh --test_type=nightly -k orc_test
+#LOCAL_JAR_PATH=$ARTF_ROOT ./run_pyspark_from_build.sh --test_type=nightly -k orc_test
 
 #spark-submit $BASE_SPARK_SUBMIT_ARGS $CUDF_UDF_TEST_ARGS --jars $RAPIDS_TEST_JAR ./runtests.py -m "cudf_udf" -v -rfExXs --cudf_udf --test_type=$TEST_TYPE
 #only run cache tests with our serializer in nightly test for Spark version >= 3.1.1
