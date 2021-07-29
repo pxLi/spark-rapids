@@ -102,6 +102,17 @@ TEST_TYPE="nightly"
 #spark-submit $BASE_SPARK_SUBMIT_ARGS --jars $RAPIDS_TEST_JAR ./runtests.py -v -rfExXs \
 #  --std_input_path="$WORKSPACE/integration_tests/src/test/resources/" --test_type=$TEST_TYPE -k orc_test
 
+SPARK_SUBMIT_FLAGS=="--executor-memory 12G \
+    --total-executor-cores 6 \
+    --conf spark.sql.shuffle.partitions=12 \
+    --conf spark.task.maxFailures=$SPARK_TASK_MAXFAILURES \
+    --conf spark.dynamicAllocation.enabled=false \
+    --conf spark.driver.extraClassPath=${CUDF_JAR}:${RAPIDS_PLUGIN_JAR}:${RAPIDS_UDF_JAR} \
+    --conf spark.executor.extraClassPath=${CUDF_JAR}:${RAPIDS_PLUGIN_JAR}:${RAPIDS_UDF_JAR} \
+    --conf spark.driver.extraJavaOptions=-Duser.timezone=UTC \
+    --conf spark.executor.extraJavaOptions=-Duser.timezone=UTC \
+    --conf spark.sql.session.timeZone=UTC"
+
 SPARK_HOME="$ARTF_ROOT/spark-$SPARK_VER-bin-hadoop3.2" LOCAL_JAR_PATH=$ARTF_ROOT ./run_pyspark_from_build.sh -k orc_test
 
 #spark-submit $BASE_SPARK_SUBMIT_ARGS $CUDF_UDF_TEST_ARGS --jars $RAPIDS_TEST_JAR ./runtests.py -m "cudf_udf" -v -rfExXs --cudf_udf --test_type=$TEST_TYPE
