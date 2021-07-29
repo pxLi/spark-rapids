@@ -55,7 +55,7 @@ tar xzf "$RAPIDS_INT_TESTS_TGZ" -C $ARTF_ROOT && rm -f "$RAPIDS_INT_TESTS_TGZ"
 $MVN_GET_CMD -DremoteRepositories=$SPARK_REPO \
     -DgroupId=org.apache -DartifactId=spark -Dversion=$SPARK_VER -Dclassifier=bin-hadoop3.2 -Dpackaging=tgz
 
-SPARK_HOME="$ARTF_ROOT/spark-$SPARK_VER-bin-hadoop3.2"
+export SPARK_HOME="$ARTF_ROOT/spark-$SPARK_VER-bin-hadoop3.2"
 export PATH="$SPARK_HOME/bin:$SPARK_HOME/sbin:$PATH"
 tar zxf $SPARK_HOME.tgz -C $ARTF_ROOT && \
     rm -f $SPARK_HOME.tgz
@@ -66,11 +66,10 @@ IS_SPARK_311_OR_LATER=0
 SPARK_TASK_MAXFAILURES=1
 [[ "$IS_SPARK_311_OR_LATER" -eq "0" ]] && SPARK_TASK_MAXFAILURES=4
 
-BASE_SPARK_SUBMIT_ARGS="$BASE_SPARK_SUBMIT_ARGS \
+export BASE_SPARK_SUBMIT_ARGS="$BASE_SPARK_SUBMIT_ARGS \
     --master spark://$HOSTNAME:7077 \
     --executor-memory 12G \
-    --total-executor-cores 2 \
-    --executor-cores 2 \
+    --total-executor-cores 6 \
     --conf spark.sql.shuffle.partitions=12 \
     --conf spark.task.maxFailures=$SPARK_TASK_MAXFAILURES \
     --conf spark.dynamicAllocation.enabled=false \
@@ -115,7 +114,7 @@ TEST_PARALLEL=0
 #    --conf spark.executor.extraJavaOptions=-Duser.timezone=UTC \
 #    --conf spark.sql.session.timeZone=UTC"
 
-SPARK_HOME="$ARTF_ROOT/spark-$SPARK_VER-bin-hadoop3.2" LOCAL_JAR_PATH=$ARTF_ROOT ./run_pyspark_from_build.sh --test_type=nightly -k orc_test
+LOCAL_JAR_PATH=$ARTF_ROOT ./run_pyspark_from_build.sh --test_type=nightly -k orc_test
 
 #spark-submit $BASE_SPARK_SUBMIT_ARGS $CUDF_UDF_TEST_ARGS --jars $RAPIDS_TEST_JAR ./runtests.py -m "cudf_udf" -v -rfExXs --cudf_udf --test_type=$TEST_TYPE
 #only run cache tests with our serializer in nightly test for Spark version >= 3.1.1
