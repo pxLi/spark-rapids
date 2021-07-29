@@ -70,7 +70,7 @@ BASE_SPARK_SUBMIT_ARGS="$BASE_SPARK_SUBMIT_ARGS \
     --master spark://$HOSTNAME:7077 \
     --executor-memory 12G \
     --total-executor-cores 2 \
-    --executor-core 2 \
+    --executor-cores 2 \
     --conf spark.sql.shuffle.partitions=12 \
     --conf spark.task.maxFailures=$SPARK_TASK_MAXFAILURES \
     --conf spark.dynamicAllocation.enabled=false \
