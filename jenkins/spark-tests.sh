@@ -66,26 +66,26 @@ IS_SPARK_311_OR_LATER=0
 SPARK_TASK_MAXFAILURES=1
 [[ "$IS_SPARK_311_OR_LATER" -eq "0" ]] && SPARK_TASK_MAXFAILURES=4
 
-BASE_SPARK_SUBMIT_ARGS="$BASE_SPARK_SUBMIT_ARGS \
-    --master spark://$HOSTNAME:7077 \
-    --executor-memory 12G \
-    --total-executor-cores 6 \
-    --conf spark.sql.shuffle.partitions=12 \
-    --conf spark.task.maxFailures=$SPARK_TASK_MAXFAILURES \
-    --conf spark.dynamicAllocation.enabled=false \
-    --conf spark.driver.extraClassPath=${CUDF_JAR}:${RAPIDS_PLUGIN_JAR}:${RAPIDS_UDF_JAR} \
-    --conf spark.executor.extraClassPath=${CUDF_JAR}:${RAPIDS_PLUGIN_JAR}:${RAPIDS_UDF_JAR} \
-    --conf spark.driver.extraJavaOptions=-Duser.timezone=UTC \
-    --conf spark.executor.extraJavaOptions=-Duser.timezone=UTC \
-    --conf spark.sql.session.timeZone=UTC"
+#BASE_SPARK_SUBMIT_ARGS="$BASE_SPARK_SUBMIT_ARGS \
+#    --master spark://$HOSTNAME:7077 \
+#    --executor-memory 12G \
+#    --total-executor-cores 6 \
+#    --conf spark.sql.shuffle.partitions=12 \
+#    --conf spark.task.maxFailures=$SPARK_TASK_MAXFAILURES \
+#    --conf spark.dynamicAllocation.enabled=false \
+#    --conf spark.driver.extraClassPath=${CUDF_JAR}:${RAPIDS_PLUGIN_JAR}:${RAPIDS_UDF_JAR} \
+#    --conf spark.executor.extraClassPath=${CUDF_JAR}:${RAPIDS_PLUGIN_JAR}:${RAPIDS_UDF_JAR} \
+#    --conf spark.driver.extraJavaOptions=-Duser.timezone=UTC \
+#    --conf spark.executor.extraJavaOptions=-Duser.timezone=UTC \
+#    --conf spark.sql.session.timeZone=UTC"
 
-CUDF_UDF_TEST_ARGS="--conf spark.rapids.memory.gpu.allocFraction=0.1 \
-    --conf spark.rapids.memory.gpu.minAllocFraction=0 \
-    --conf spark.rapids.python.memory.gpu.allocFraction=0.1 \
-    --conf spark.rapids.python.concurrentPythonWorkers=2 \
-    --conf spark.executorEnv.PYTHONPATH=${RAPIDS_PLUGIN_JAR} \
-    --conf spark.pyspark.python=/opt/conda/bin/python \
-    --py-files ${RAPIDS_PLUGIN_JAR}" # explicitly specify python binary path in env w/ multiple python versions
+#CUDF_UDF_TEST_ARGS="--conf spark.rapids.memory.gpu.allocFraction=0.1 \
+#    --conf spark.rapids.memory.gpu.minAllocFraction=0 \
+#    --conf spark.rapids.python.memory.gpu.allocFraction=0.1 \
+#    --conf spark.rapids.python.concurrentPythonWorkers=2 \
+#    --conf spark.executorEnv.PYTHONPATH=${RAPIDS_PLUGIN_JAR} \
+#    --conf spark.pyspark.python=/opt/conda/bin/python \
+#    --py-files ${RAPIDS_PLUGIN_JAR}" # explicitly specify python binary path in env w/ multiple python versions
 
 export PATH="$SPARK_HOME/bin:$SPARK_HOME/sbin:$PATH"
 
@@ -93,14 +93,37 @@ export PATH="$SPARK_HOME/bin:$SPARK_HOME/sbin:$PATH"
 stop-slave.sh
 stop-master.sh
 start-master.sh
-start-slave.sh spark://$HOSTNAME:7077
+start-slave.sh spark://${HOSTNAME}:7077
 jps
 
 echo "----------------------------START TEST------------------------------------"
 pushd $RAPIDS_INT_TESTS_HOME
-TEST_TYPE="nightly"
-spark-submit $BASE_SPARK_SUBMIT_ARGS --jars $RAPIDS_TEST_JAR ./runtests.py -v -rfExXs --std_input_path="$WORKSPACE/integration_tests/src/test/resources/" --test_type=$TEST_TYPE
-spark-submit $BASE_SPARK_SUBMIT_ARGS $CUDF_UDF_TEST_ARGS --jars $RAPIDS_TEST_JAR ./runtests.py -m "cudf_udf" -v -rfExXs --cudf_udf --test_type=$TEST_TYPE
+
+#export SPARK_MASTER_HOST=${HOSTNAME}
+export SPARK_MASTER=spark://${HOSTNAME}:7077
+#$SPARK_HOME/sbin/start-master.sh -h $SPARK_MASTER_HOST
+#$SPARK_HOME/sbin/spark-daemon.sh start org.apache.spark.deploy.worker.Worker 1 $SPARK_MASTER
+export SPARK_SUBMIT_FLAGS=$BASE_SPARK_SUBMIT_ARGS
+export LOCAL_JAR_PATH=$ARTF_ROOT
+
+TEST_TYPE="nightly" \
+    PYSP_TEST_spark_master=$SPARK_MASTER \
+    TEST_PARALLEL=0 \
+    PYSP_TEST_spark_cores_max=2 \
+    PYSP_TEST_spark_executor_cores=1 \
+    PYSP_TEST_spark_rapids_memory_gpu_minAllocFraction=0 \
+    PYSP_TEST_spark_rapids_memory_gpu_maxAllocFraction=0.1 \
+    PYSP_TEST_spark_rapids_memory_gpu_allocFraction=0.1 \
+    ./run_pyspark_from_build.sh
+
+#PYSP_TEST_spark_cores_max=2 \
+#    PYSP_TEST_spark_executor_cores=1 \
+#    PYSP_TEST_spark_rapids_memory_gpu_minAllocFraction=0 \
+#    PYSP_TEST_spark_rapids_memory_gpu_maxAllocFraction=0.1 \
+#    PYSP_TEST_spark_rapids_memory_gpu_allocFraction=0.1 \
+
+#spark-submit $BASE_SPARK_SUBMIT_ARGS --jars $RAPIDS_TEST_JAR ./runtests.py -v -rfExXs --std_input_path="$WORKSPACE/integration_tests/src/test/resources/" --test_type=$TEST_TYPE
+#spark-submit $BASE_SPARK_SUBMIT_ARGS $CUDF_UDF_TEST_ARGS --jars $RAPIDS_TEST_JAR ./runtests.py -m "cudf_udf" -v -rfExXs --cudf_udf --test_type=$TEST_TYPE
 #only run cache tests with our serializer in nightly test for Spark version >= 3.1.1
 if [[ "$IS_SPARK_311_OR_LATER" -eq "1" ]]; then
   spark-submit ${BASE_SPARK_SUBMIT_ARGS} --conf spark.sql.cache.serializer=com.nvidia.spark.rapids.shims.spark311.ParquetCachedBatchSerializer --jars $RAPIDS_TEST_JAR \
