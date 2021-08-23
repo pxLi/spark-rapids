@@ -116,6 +116,8 @@ export SCRIPT_PATH="$(pwd -P)"
 export TARGET_DIR="$SCRIPT_PATH/target"
 mkdir -p $TARGET_DIR
 
+mv $WORKSPACE/integration_tests/run_pyspark_from_build.sh .
+
 run_test() {
     local TEST=${1//\.py/}
     local LOG_FILE
