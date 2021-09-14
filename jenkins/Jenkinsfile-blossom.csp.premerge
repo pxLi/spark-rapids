@@ -1,0 +1,100 @@
+#!/usr/local/env groovy
+/*
+ * Copyright (c) 2020-2021, NVIDIA CORPORATION.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ *
+ * Jenkinsfile for building rapids-plugin on blossom
+ *
+ */
+
+@Library(['shared-libs', 'blossom-lib']) _
+
+pipeline {
+    agent {
+        kubernetes {
+            label "premerge-init-${BUILD_TAG}"
+            cloud 'sc-ipp-blossom-prod'
+        }
+    }
+
+    options {
+        ansiColor('xterm')
+        buildDiscarder(logRotator(numToKeepStr: '50'))
+        skipDefaultCheckout true
+        timeout(time: 1, unit: 'HOURS') // long enough to make sure we won't timeout GPU scheduling w/ too many concurrent builds
+    }
+
+    parameters {
+        string(name: 'REF', defaultValue: '\${sha1}', description: 'Commit to build')
+    }
+
+    environment {
+        JENKINS_ROOT = 'jenkins'
+        PREMERGE_SCRIPT = '$JENKINS_ROOT/spark-premerge-build.sh'
+        MVN_URM_MIRROR = '-s jenkins/settings.xml -P mirror-apache-to-urm'
+        LIBCUDF_KERNEL_CACHE_PATH = '/tmp/.cudf'
+        ARTIFACTORY_NAME = "${ArtifactoryConstants.ARTIFACTORY_NAME}"
+        GITHUB_TOKEN = credentials("github-token")
+        URM_CREDS = credentials("urm_creds")
+        URM_URL = "https://${ArtifactoryConstants.ARTIFACTORY_NAME}/artifactory/sw-spark-maven"
+        CUSTOM_WORKSPACE = "/home/jenkins/agent/workspace/${BUILD_TAG}"
+        CUDA_CLASSIFIER = 'cuda11'
+    }
+
+    stages {
+        stage("Determine Project Version") {
+            steps {
+                script {
+                    // Retrieve PROJECT_VER from version-def.sh, e.g, '21.10.0-SNAPSHOT'
+                    PROJECT_VER = sh(returnStdout: true, script: "bash $JENKINS_ROOT/version-def.sh | cut -d ',' -f 3 | cut -d ' ' -f 3")
+                    PROJECT_VER = PROJECT_VER.split('-')[0] // Remove trailing '-SNAPSHOT'
+                    echo PROJECT_VER
+
+                    def versions = PROJECT_VER.split('\\.')
+                    major_ver = versions[0].toInteger()
+                    minor_ver = versions[1].toInteger()
+
+                    if (major_ver >= 21) {
+                        if (minor_ver == 8) {
+                            PREMERGE_CI_2_ARGUMENT = "unit_test" // for '21.08' version
+                        } else if (minor_ver >= 10) {
+                            PREMERGE_CI_2_ARGUMENT = "ci_2" // for '21.10' or later version
+                        } else {
+                            // do nothing to avoid breaking old version
+                        }
+                    } else {
+                        error("Unsupported major version: $major_ver")
+                    }
+
+                    echo PREMERGE_CI_2_ARGUMENT
+                }
+            }
+        }
+
+    } // end of stages
+
+    post {
+        always {
+            script {
+                if (skipped) {
+                    return
+                }
+            }
+        }
+    }
+
+} // end of pipeline
