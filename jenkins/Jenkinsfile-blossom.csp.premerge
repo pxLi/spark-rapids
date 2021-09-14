@@ -60,7 +60,9 @@ pipeline {
         stage("Determine Project Version") {
             steps {
                 script {
-                    sh "git --no-pager log -n 10 --pretty=short"
+                    echo "${REF}"
+                    sh "pwd"
+                    sh "git --no-pager log -n 10 --pretty=short || true"
                     // Retrieve PROJECT_VER from version-def.sh, e.g, '21.10.0-SNAPSHOT'
                     PROJECT_VER = sh(returnStdout: true, script: "bash $JENKINS_ROOT/version-def.sh | cut -d ',' -f 3 | cut -d ' ' -f 3")
                     PROJECT_VER = PROJECT_VER.split('-')[0] // Remove trailing '-SNAPSHOT'
