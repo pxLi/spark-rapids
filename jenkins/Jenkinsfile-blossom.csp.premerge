@@ -28,6 +28,7 @@ pipeline {
         kubernetes {
             label "premerge-init-${BUILD_TAG}"
             cloud 'sc-ipp-blossom-prod'
+            yaml pod.getDockerBuildYAML()
         }
     }
 
@@ -39,7 +40,7 @@ pipeline {
     }
 
     parameters {
-        string(name: 'REF', defaultValue: '\${sha1}', description: 'Commit to build')
+        string(name: 'REF', defaultValue: '\${ghprbActualCommit}', description: 'Commit to build')
     }
 
     environment {
@@ -59,6 +60,7 @@ pipeline {
         stage("Determine Project Version") {
             steps {
                 script {
+                    sh "git --no-pager log -n 10 --pretty=short"
                     // Retrieve PROJECT_VER from version-def.sh, e.g, '21.10.0-SNAPSHOT'
                     PROJECT_VER = sh(returnStdout: true, script: "bash $JENKINS_ROOT/version-def.sh | cut -d ',' -f 3 | cut -d ' ' -f 3")
                     PROJECT_VER = PROJECT_VER.split('-')[0] // Remove trailing '-SNAPSHOT'
@@ -87,14 +89,14 @@ pipeline {
 
     } // end of stages
 
-    post {
-        always {
-            script {
-                if (skipped) {
-                    return
-                }
-            }
-        }
-    }
+//    post {
+//        always {
+//            script {
+//                if (skipped) {
+//                    return
+//                }
+//            }
+//        }
+//    }
 
 } // end of pipeline
