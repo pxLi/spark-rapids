@@ -61,7 +61,7 @@ pipeline {
         ARTIFACTORY_NAME = "${ArtifactoryConstants.ARTIFACTORY_NAME}"
         GITHUB_TOKEN = credentials("github-token")
         URM_CREDS = credentials("urm_creds")
-        URM_URL = "https://${ArtifactoryConstants.ARTIFACTORY_NAME}/artifactory/sw-spark-maven"
+        URM_URL = "https://urm-rn.nvidia.com/artifactory/sw-spark-maven"
         PVC = credentials("pvc")
         CUSTOM_WORKSPACE = "/home/jenkins/agent/workspace/${BUILD_TAG}"
         CUDA_CLASSIFIER = 'cuda11'
