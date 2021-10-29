@@ -102,8 +102,9 @@ git commit -am "Merge {HEAD} into {BASE}"
 git push <personal fork> fix-auto-merge-conflict-{number}
 # Open a PR targets NVIDIA/spark-rapids {BASE}
 ```
-**IMPORTANT:** Before merging this PR, be sure to change the merging strategy to `Create a merge commit` (repo admin only). Otherwise, history will be lost and the branches become incompatible
-Once this PR is approved and merged, the auto-merge PR should automatically be merged since it contains the same commit hashes
+**IMPORTANT:** Before merging this PR, be sure to change the merging strategy to `Create a merge commit` (repo admin only).
+
+Once this PR is approved and merged, the auto-merge PR should automatically be closed since it contains the same commit hashes
 """)
         print(f'status code: {r.status_code}')
         print(r.json())
