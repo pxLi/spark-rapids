@@ -2047,7 +2047,7 @@ object SupportedOpsDocs {
     println("</table>")
     println()
     println("## Input/Output")
-    println("For Input and Output it is not cleanly exposed what types are supported and which are not.")
+    println("For Input and Output it is not cleanly exposed what types are supported and which are not. ok")
     println("This table tries to clarify that. Be aware that some types may be disabled in some")
     println("cases for either reads or writes because of processing limitations, like rebasing")
     println("dates or timestamps, or for a lack of type coercion support.")
