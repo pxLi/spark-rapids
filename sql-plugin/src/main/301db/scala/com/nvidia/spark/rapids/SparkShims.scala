@@ -18,7 +18,6 @@ package com.nvidia.spark.rapids.shims
 
 import com.nvidia.spark.rapids._
 
-// xyz
 object SparkShimImpl extends Spark30XdbShims {
 
   override def getSparkShimVersion: ShimVersion = ShimLoader.getShimVersion
