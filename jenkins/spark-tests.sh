@@ -207,6 +207,8 @@ export -f run_test_not_parallel
 get_cases_by_tags() {
   local cases
   local args=${2}
+  TEST_TAGS="${1}" \
+           ./run_pyspark_from_build.sh "${args}" --collect-only -p no:warnings -qq
   cases=$(TEST_TAGS="${1}" \
            ./run_pyspark_from_build.sh "${args}" --collect-only -p no:warnings -qq 2>/dev/null \
            | grep -oP '(?<=::).*?(?=\[)' | uniq | xargs)
@@ -217,6 +219,8 @@ export -f get_cases_by_tags
 get_tests_by_tags() {
   local tests
   local args=${2}
+  TEST_TAGS="${1}" \
+           ./run_pyspark_from_build.sh "${args}" --collect-only -qqq -p no:warnings
   tests=$(TEST_TAGS="${1}" \
            ./run_pyspark_from_build.sh "${args}" --collect-only -qqq -p no:warnings 2>/dev/null \
            | grep -oP '(?<=python/).*?(?=.py)' | xargs)
