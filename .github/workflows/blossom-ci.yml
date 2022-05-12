@@ -74,6 +74,9 @@ jobs:
 #       - name: Setup blackduck properties
 #         run: |
 #              echo detect.pip.requirements.path=./requirements.txt >> application.properties
+      - name: Setup blackduck properties
+        run: |
+             echo detect.excluded.detector.types=PIP >> application.properties
 
       - name: Run blossom action
         uses: NVIDIA/blossom-action@main
