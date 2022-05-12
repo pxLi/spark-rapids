@@ -71,12 +71,15 @@ jobs:
           lfs: 'true'
 
       # add blackduck properties https://synopsys.atlassian.net/wiki/spaces/INTDOCS/pages/631308372/Methods+for+Configuring+Analysis#Using-a-configuration-file
-#       - name: Setup blackduck properties
-#         run: |
-#              echo detect.pip.requirements.path=./requirements.txt >> application.properties
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.8
+      
       - name: Setup blackduck properties
         run: |
-             echo detect.excluded.detector.types=PIP >> application.properties
+             echo detect.python.python3=true >> application.properties
+             echo detect.pip.requirements.path=./requirements.txt >> application.properties
 
       - name: Run blossom action
         uses: NVIDIA/blossom-action@main
