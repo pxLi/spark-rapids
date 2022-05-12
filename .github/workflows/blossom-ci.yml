@@ -70,10 +70,10 @@ jobs:
           ref: ${{ fromJson(needs.Authorization.outputs.args).ref }}
           lfs: 'true'
       
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v3
-        with:
-          python-version: 3.8
+#       - name: Set up Python 3.8
+#         uses: actions/setup-python@v3
+#         with:
+#           python-version: 3.8
 
       # add blackduck properties https://synopsys.atlassian.net/wiki/spaces/INTDOCS/pages/631308372/Methods+for+Configuring+Analysis#Using-a-configuration-file
       - name: Setup blackduck properties
