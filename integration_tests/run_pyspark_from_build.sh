@@ -179,8 +179,8 @@ else
 
     export PYSP_TEST_spark_driver_extraClassPath="${ALL_JARS// /:}"
     export PYSP_TEST_spark_executor_extraClassPath="${ALL_JARS// /:}"
-    export PYSP_TEST_spark_driver_extraJavaOptions="-ea -Duser.timezone=UTC $COVERAGE_SUBMIT_FLAGS"
-    export PYSP_TEST_spark_executor_extraJavaOptions='-ea -Duser.timezone=UTC'
+    export PYSP_TEST_spark_driver_extraJavaOptions="-ea -Duser.timezone=UTC -Dio.netty.tryReflectionSetAccessible=true $COVERAGE_SUBMIT_FLAGS"
+    export PYSP_TEST_spark_executor_extraJavaOptions='-ea -Duser.timezone=UTC -Dio.netty.tryReflectionSetAccessible=true'
     export PYSP_TEST_spark_ui_showConsoleProgress='false'
     export PYSP_TEST_spark_sql_session_timeZone='UTC'
     export PYSP_TEST_spark_sql_shuffle_partitions='4'
