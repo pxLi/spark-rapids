@@ -94,12 +94,12 @@ export TEST_PARALLEL=4
 if [ -d "$LOCAL_JAR_PATH" ]; then
     if [[ $TEST_MODE == "DEFAULT" ]]; then
         ## Run tests with jars in the LOCAL_JAR_PATH dir downloading from the dependency repo
-        LOCAL_JAR_PATH=$LOCAL_JAR_PATH bash $LOCAL_JAR_PATH/integration_tests/run_pyspark_from_build.sh  --runtime_env="databricks" --test_type=$TEST_TYPE
+#        LOCAL_JAR_PATH=$LOCAL_JAR_PATH bash $LOCAL_JAR_PATH/integration_tests/run_pyspark_from_build.sh  --runtime_env="databricks" --test_type=$TEST_TYPE
 
         ## Run cache tests
         if [[ "$IS_SPARK_311_OR_LATER" -eq "1" ]]; then
-          PYSP_TEST_spark_sql_cache_serializer=${PCBS_CONF} \
-           LOCAL_JAR_PATH=$LOCAL_JAR_PATH bash $LOCAL_JAR_PATH/integration_tests/run_pyspark_from_build.sh  --runtime_env="databricks" --test_type=$TEST_TYPE -k cache_test
+#          PYSP_TEST_spark_sql_cache_serializer=${PCBS_CONF} \
+#           LOCAL_JAR_PATH=$LOCAL_JAR_PATH bash $LOCAL_JAR_PATH/integration_tests/run_pyspark_from_build.sh  --runtime_env="databricks" --test_type=$TEST_TYPE -k cache_test
         fi
     fi
 
@@ -118,12 +118,12 @@ if [ -d "$LOCAL_JAR_PATH" ]; then
 else
     if [[ $TEST_MODE == "DEFAULT" ]]; then
         ## Run tests with jars building from the spark-rapids source code
-        bash /home/ubuntu/spark-rapids/integration_tests/run_pyspark_from_build.sh --runtime_env="databricks" --test_type=$TEST_TYPE
+#        bash /home/ubuntu/spark-rapids/integration_tests/run_pyspark_from_build.sh --runtime_env="databricks" --test_type=$TEST_TYPE
 
         ## Run cache tests
         if [[ "$IS_SPARK_311_OR_LATER" -eq "1" ]]; then
-            PYSP_TEST_spark_sql_cache_serializer=${PCBS_CONF} \
-            bash /home/ubuntu/spark-rapids/integration_tests/run_pyspark_from_build.sh --runtime_env="databricks" --test_type=$TEST_TYPE -k cache_test
+#            PYSP_TEST_spark_sql_cache_serializer=${PCBS_CONF} \
+#            bash /home/ubuntu/spark-rapids/integration_tests/run_pyspark_from_build.sh --runtime_env="databricks" --test_type=$TEST_TYPE -k cache_test
         fi
     fi
 
