@@ -17,7 +17,7 @@ name: Maven verify checks (Scala style, Compile and Doc-gen w/ base Spark versio
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, edited]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -25,6 +25,12 @@ concurrency:
 
 jobs:
   mvn-verify-check:
+    if: |
+      ${{ github.event.action != 'edited' || 
+         (github.event.action == 'edited' && 
+          github.event.changes != null &&
+          github.event.changes.base != null &&
+          github.event.changes.base.ref != null) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2 # refs/pull/:prNumber/merge
