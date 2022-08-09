@@ -15,8 +15,8 @@ jobs:
     
       - name: call_signoff-check
         if: ${{ github.event_name == 'pull_request_target' }}
-        uses: ./.github/workflows/signoff-check
+        uses: ./.github/workflows/signoff-check.yml
         
       - name: call_mvn-verify-check
         if: ${{ github.event_name == 'pull_request' }}
-        uses: ./.github/workflows/mvn-verify-check
+        uses: ./.github/workflows/mvn-verify-check.yml
