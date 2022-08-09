@@ -24,24 +24,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
-  bar:
-    runs-on: ["ubuntu-latest"]
-    steps:
-      - run: echo "event name is:" ${{ github.event_name }} 
-      - run: echo "event type is:" ${{ github.event.action }} 
-      - run: echo "event type is:" ${{ github.event.changes }} 
-      - run: echo "event type is:" ${{ github.event.changes.base }} 
-      - run: echo "event type is:" ${{ github.event.changes.base.ref }} 
-      - run: echo "event type is:" ${{ github.event.changes.base.ref.from }} 
-
   mvn-verify-check:
     if: |
-      ${{ github.event.action != 'edited' || 
-         (github.event.action == 'edited' && 
-          github.event.changes != null &&
-          github.event.changes.base != null &&
-          github.event.changes.base.ref != null) }}
+        github.event.action != 'edited' || 
+        (github.event.action == 'edited' &&
+         github.event.changes.base.ref.from != '')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2 # refs/pull/:prNumber/merge
