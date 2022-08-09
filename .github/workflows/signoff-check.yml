@@ -17,7 +17,7 @@ name: signoff check
 
 on:
   pull_request_target:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, edited]
 
 jobs:
   signoff-check:
@@ -28,7 +28,7 @@ jobs:
       - name: sigoff-check job
         uses: ./.github/workflows/signoff-check
         env:
-          OWNER: NVIDIA
+          OWNER: pxLi
           REPO_NAME: spark-rapids
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PULL_NUMBER: ${{ github.event.number }}
