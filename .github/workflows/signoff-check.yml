@@ -30,7 +30,7 @@ jobs:
   signoff-check:
     if: |
       ${{ github.event.action != 'edited' || 
-         (github.event.action == 'edited' && 
+         (github.event.action == 'edited' && github.event.changes.base.ref.from != NaN &&
           github.event.changes.base.ref.from != '') }}
     runs-on: ubuntu-latest
     steps:
