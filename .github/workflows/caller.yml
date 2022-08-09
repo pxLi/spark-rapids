@@ -11,12 +11,12 @@ jobs:
     if: ${{ github.event.changes.base.ref.from != '' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+#       - uses: actions/checkout@v3
     
       - name: call_signoff-check
         if: ${{ github.event_name == 'pull_request_target' }}
-        uses: ./.github/workflows/signoff-check.yml
+        uses: pxLi/spark-rapids/.github/workflows/signoff-check.yml@branch-22.08
         
       - name: call_mvn-verify-check
         if: ${{ github.event_name == 'pull_request' }}
-        uses: ./.github/workflows/mvn-verify-check.yml
+        uses: pxLi/spark-rapids/.github/workflows/mvn-verify-check.yml@branch-22.08
