@@ -7,13 +7,9 @@ on:
     types: [edited]
 
 jobs:
-
-
   signoff-check:
     if: ${{ github.event.changes.base.ref.from != '' }}
     runs-on: ubuntu-latest
     steps:
-      call_signoff-check:
-        runs-on: ubuntu-latest
-        steps:
-          - uses: ./.github/workflows/signoff-check
+      - name: call_signoff-check
+        uses: ./.github/workflows/signoff-check
