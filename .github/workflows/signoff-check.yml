@@ -23,7 +23,7 @@ jobs:
   signoff-check:
     if: |
       ${{ github.event.action != 'edited' 
-      || (github.event.action == 'edited' && changes != null ) }}
+      || (github.event.action == 'edited' && github.event.changes != null ) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
