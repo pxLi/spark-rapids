@@ -20,6 +20,12 @@ on:
     types: [opened, synchronize, reopened, edited]
 
 jobs:
+  bar:
+    runs-on: ["ubuntu-latest"]
+    steps:
+      - run: echo "event name is:" ${{ github.event_name }} 
+      - run: echo "event type is:" ${{ github.event.action }} 
+
   signoff-check:
     if: |
       ${{ github.event.action != 'edited' || 
