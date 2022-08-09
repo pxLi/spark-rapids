@@ -7,16 +7,18 @@ on:
     types: [edited]
 
 jobs:
-  signoff-check:
+  event_check:
     if: ${{ github.event.changes.base.ref.from != '' }}
     runs-on: ubuntu-latest
     steps:
-#       - uses: actions/checkout@v3
+      - run: echo ${{ github.event.changes.base.ref.from }}
     
-      - name: call_signoff-check
-        if: ${{ github.event_name == 'pull_request_target' }}
-        uses: pxLi/spark-rapids/.github/workflows/signoff-check.yml@branch-22.08
+  call_signoff-check:
+    needs: [event_check]
+    if: ${{ github.event_name == 'pull_request_target' }}
+    uses: pxLi/spark-rapids/.github/workflows/signoff-check.yml@branch-22.08
         
-      - name: call_mvn-verify-check
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: pxLi/spark-rapids/.github/workflows/mvn-verify-check.yml@branch-22.08
+  call_mvn-verify-check:
+    needs: [event_check]
+    if: ${{ github.event_name == 'pull_request' }}
+    uses: pxLi/spark-rapids/.github/workflows/mvn-verify-check.yml@branch-22.08
