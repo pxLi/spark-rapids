@@ -20,10 +20,18 @@ on:
     types: [opened, synchronize, reopened, edited]
 
 jobs:
+  bar:
+    runs-on: ["ubuntu-latest"]
+    steps:
+      - run: echo "event name is:" ${{ github.event_name }} 
+      - run: echo "event type is:" ${{ github.event.action }} 
+      - run: echo "event type is:" ${{ github.event.changes.base.ref.from }} 
+
   signoff-check:
     if: |
-      ${{ github.event.action != 'edited' 
-      || (github.event.action == 'edited' && github.event.changes != null ) }}
+        github.event.action != 'edited' || 
+        (github.event.action == 'edited' &&
+         github.event.changes.base.ref.from != '')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
