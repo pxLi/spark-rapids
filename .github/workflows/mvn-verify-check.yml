@@ -17,7 +17,8 @@ name: mvn[compile,RAT,scalastyle,docgen]
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, edited]
+    types: [opened, synchronize, reopened]
+  workflow_call:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -25,9 +26,6 @@ concurrency:
 
 jobs:
   get-noSnapshot-versions-from-dist:
-    if: |
-      github.event.action != 'edited' || 
-      (github.event.action == 'edited' && github.event.changes.base.ref.from != '')
     runs-on: ubuntu-latest
     outputs:
       sparkHeadVersion: ${{ steps.noSnapshotVersionsStep.outputs.headVersion }}
