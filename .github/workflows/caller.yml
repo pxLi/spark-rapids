@@ -28,7 +28,7 @@ jobs:
          workflow: signoff check
          ref: ${{ github.event.pull_request.head.ref }}
          token: ${{ secrets.PAT }}
-         inputs: '{ "ref": "${{ github.event.pull_request.head.ref }}", "pr_num": "${{ github.event.number }}"}'
+         inputs: '{ "pr_num": "${{ github.event.number }}" }'
         
 #   call_mvn-verify-check:
 #     needs: [event_check]
