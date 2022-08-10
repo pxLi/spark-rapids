@@ -18,15 +18,13 @@ name: signoff check
 on:
   pull_request_target:
     types: [opened, synchronize, reopened]
-  workflow_call:
+  workflow_dispatch:
 
 jobs:
-
-
   signoff-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: sigoff-check job
         uses: ./.github/workflows/signoff-check
