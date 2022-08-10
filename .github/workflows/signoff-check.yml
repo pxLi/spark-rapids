@@ -19,6 +19,10 @@ on:
   pull_request_target:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
+    inputs:
+      pr_num:
+        description: 'PR Number'
+        required: true
 
 jobs:
   signoff-check:
@@ -32,4 +36,4 @@ jobs:
           OWNER: pxLi
           REPO_NAME: spark-rapids
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PULL_NUMBER: ${{ github.event.number }}
+          PULL_NUMBER: ${{ github.event.number || inputs.pr_num }}
