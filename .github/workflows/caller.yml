@@ -27,6 +27,7 @@ jobs:
        with:
          workflow: signoff check
          repo: pxLi/spark-rapids
+         ref: ${{ github.event.pull_request.head.ref }}
          token: ${{ secrets.PAT }}
          inputs: '{ "pr_num": "${{ github.event.number }}"}'
         
