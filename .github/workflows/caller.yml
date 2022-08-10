@@ -27,7 +27,7 @@ jobs:
        with:
          workflow: signoff check
          repo: pxLi/spark-rapids
-         token: ${{ secrets.GITHUB_TOKEN }}
+         token: ${{ secrets.PAT }}
         
 #   call_mvn-verify-check:
 #     needs: [event_check]
