@@ -18,17 +18,28 @@ jobs:
 #     if: ${{ github.event_name == 'pull_request_target' }}
 #     uses: pxLi/spark-rapids/.github/workflows/signoff-check.yml@branch-22.08
 
+#   call:
+#     needs: [event_check]
+#     if: ${{ github.event_name == 'pull_request_target' }}
+#     runs-on: ubuntu-latest
+#     steps:
+#      - uses: aurelien-baudet/workflow-dispatch@v2
+#        with:
+#          workflow: signoff check
+#          ref: ${{ github.event.pull_request.head.ref }}
+#          token: ${{ secrets.PAT }}
+#          inputs: '{ "pr_num": "${{ github.event.number }}" }'
   call:
     needs: [event_check]
     if: ${{ github.event_name == 'pull_request_target' }}
     runs-on: ubuntu-latest
     steps:
-     - uses: aurelien-baudet/workflow-dispatch@v2
-       with:
-         workflow: signoff check
-         ref: ${{ github.event.pull_request.head.ref }}
-         token: ${{ secrets.PAT }}
-         inputs: '{ "pr_num": "${{ github.event.number }}" }'
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.PAT }}
+          event-type: caller
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "pr_num": "${{ github.event.number }}"}'
         
 #   call_mvn-verify-check:
 #     needs: [event_check]
