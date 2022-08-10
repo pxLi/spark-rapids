@@ -24,7 +24,7 @@ jobs:
     steps:
      - uses: benc-uk/workflow-dispatch@v1
        with:
-         workflow: signoff-check
+         workflow: signoff check
          token: ${{ secrets.GITHUB_TOKEN }}
         
 #   call_mvn-verify-check:
