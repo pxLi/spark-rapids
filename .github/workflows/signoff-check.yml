@@ -20,6 +20,9 @@ on:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
     inputs:
+      ref:
+        description: 'ref'
+        required: true
       pr_num:
         description: 'PR Number'
         required: true
