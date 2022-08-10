@@ -20,11 +20,13 @@ jobs:
 
   call:
     needs: [event_check]
+    if: ${{ github.event_name == 'pull_request_target' }}
     runs-on: ubuntu-latest
     steps:
      - uses: benc-uk/workflow-dispatch@v1
        with:
          workflow: signoff check
+         repo: pxLi/spark-rapids
          token: ${{ secrets.GITHUB_TOKEN }}
         
 #   call_mvn-verify-check:
