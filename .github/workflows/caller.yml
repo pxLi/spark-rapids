@@ -13,12 +13,21 @@ jobs:
     steps:
       - run: echo ${{ github.event.changes.base.ref.from }}
     
-  call_signoff-check:
+#   call_signoff-check:
+#     needs: [event_check]
+#     if: ${{ github.event_name == 'pull_request_target' }}
+#     uses: pxLi/spark-rapids/.github/workflows/signoff-check.yml@branch-22.08
+
+  call:
     needs: [event_check]
-    if: ${{ github.event_name == 'pull_request_target' }}
-    uses: pxLi/spark-rapids/.github/workflows/signoff-check.yml@branch-22.08
+    runs-on: ubuntu-latest
+    steps:
+     - uses: benc-uk/workflow-dispatch@v1
+       with:
+         workflow: signoff-check
+         token: ${{ secrets.GITHUB_TOKEN }}
         
-  call_mvn-verify-check:
-    needs: [event_check]
-    if: ${{ github.event_name == 'pull_request' }}
-    uses: pxLi/spark-rapids/.github/workflows/mvn-verify-check.yml@branch-22.08
+#   call_mvn-verify-check:
+#     needs: [event_check]
+#     if: ${{ github.event_name == 'pull_request' }}
+#     uses: pxLi/spark-rapids/.github/workflows/mvn-verify-check.yml@branch-22.08
