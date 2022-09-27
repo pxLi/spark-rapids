@@ -103,7 +103,7 @@ pipeline {
     environment {
         JENKINS_ROOT = 'jenkins'
         PREMERGE_SCRIPT = '$JENKINS_ROOT/spark-premerge-build.sh'
-        MVN_URM_MIRROR = '-s jenkins/settings.xml -P mirror-apache-to-urm'
+//        MVN_URM_MIRROR = '-s jenkins/settings.xml -P mirror-apache-to-urm'
         LIBCUDF_KERNEL_CACHE_PATH = '/tmp/.cudf'
         ARTIFACTORY_NAME = "${ArtifactoryConstants.ARTIFACTORY_NAME}"
         GITHUB_TOKEN = credentials("github-token")
