@@ -1,7 +1,6 @@
 # Copyright (c) 2020-2023, NVIDIA CORPORATION.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
@@ -68,7 +67,7 @@ _non_neg_zero_double_special_cases = [
 no_neg_zero_all_basic_gens = [byte_gen, short_gen, int_gen, long_gen,
         # -0.0 cannot work because of -0.0 == 0.0 in cudf for distinct
         # but nans and other default special cases do work
-        FloatGen(special_cases=_non_neg_zero_float_special_cases), 
+        FloatGen(special_cases=_non_neg_zero_float_special_cases),
         DoubleGen(special_cases=_non_neg_zero_double_special_cases),
         string_gen, boolean_gen, date_gen, timestamp_gen]
 
@@ -84,7 +83,7 @@ decimal_gens_no_nulls = [DecimalGen(precision=7, scale=3, nullable=False),
 
 no_neg_zero_all_basic_gens_no_nans = [byte_gen, short_gen, int_gen, long_gen,
         # -0.0 cannot work because of -0.0 == 0.0 in cudf for distinct
-        FloatGen(special_cases=[], no_nans=True), 
+        FloatGen(special_cases=[], no_nans=True),
         DoubleGen(special_cases=[], no_nans=True),
         string_gen, boolean_gen, date_gen, timestamp_gen]
 
@@ -648,7 +647,7 @@ def test_arrays_overlap_before_spark313(data_gen):
             'arrays_overlap(array(), array(1, 2))')
     )
 
-@pytest.mark.parametrize('data_gen', [ByteGen(special_cases=[-10, 0, 10]), ShortGen(special_cases=[-10, 0, 10]), 
+@pytest.mark.parametrize('data_gen', [ByteGen(special_cases=[-10, 0, 10]), ShortGen(special_cases=[-10, 0, 10]),
                                       IntegerGen(special_cases=[-10, 0, 10]), LongGen(special_cases=[-10, 0, 10])], ids=idfn)
 def test_array_remove_scalar(data_gen):
     gen = StructGen(
@@ -662,9 +661,9 @@ def test_array_remove_scalar(data_gen):
             'array_remove(a, 10)')
     )
 
-@pytest.mark.parametrize('data_gen', [ByteGen(special_cases=[5]), ShortGen(special_cases=[5]), 
+@pytest.mark.parametrize('data_gen', [ByteGen(special_cases=[5]), ShortGen(special_cases=[5]),
                                       IntegerGen(special_cases=[5]), LongGen(special_cases=[5]),
-                                      FloatGen(special_cases=_non_neg_zero_float_special_cases + [-0.0]), 
+                                      FloatGen(special_cases=_non_neg_zero_float_special_cases + [-0.0]),
                                       DoubleGen(special_cases=_non_neg_zero_double_special_cases + [-0.0]),
                                       StringGen(pattern='[0-9]{1,5}'), boolean_gen, date_gen, timestamp_gen] + decimal_gens, ids=idfn)
 def test_array_remove(data_gen):

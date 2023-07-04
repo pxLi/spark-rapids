@@ -263,6 +263,8 @@ rapids_shuffle_smoke_test() {
 # - MULTITHREADED_SHUFFLE: shuffle tests only
 TEST_MODE=${TEST_MODE:-'DEFAULT'}
 if [[ $TEST_MODE == "DEFAULT" ]]; then
+  sed -i '755d' integration_tests/src/main/python/data_gen.py
+
   ./run_pyspark_from_build.sh -k 'test_array_min_max[Float] or test_array_item_ansi_fail_invalid_index[-2]' --debug_tmp_path --tmp_path $WORKSPACE/jars
 
 #  # ParquetCachedBatchSerializer cache_test

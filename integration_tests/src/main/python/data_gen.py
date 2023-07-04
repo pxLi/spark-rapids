@@ -182,7 +182,7 @@ class StringGen(DataGen):
         # save pattern and charset for cache repr
         charsetrepr = '[' + ','.join(charset) + ']' if charset != sre_yield.CHARSET else 'sre_yield.CHARSET'
         self.stringrepr = pattern + ',' + str(flags) + ',' + charsetrepr
-    
+
     def _cache_repr(self):
         return super()._cache_repr() + '(' + self.stringrepr + ')'
 
@@ -392,7 +392,7 @@ class FloatGen(DataGen):
         if self._no_nans and (math.isnan(v) or v == math.inf or v == -math.inf):
             v = None if self.nullable else 0.0
         return v
-    
+
     def _cache_repr(self):
         return super()._cache_repr() + '(' + str(self._no_nans) + ')'
 
@@ -723,7 +723,7 @@ class DayTimeIntervalGen(DataGen):
         # https://issues.apache.org/jira/browse/SPARK-38577
         # If above issue is fixed, should update this DayTimeIntervalGen.
         return timedelta(microseconds=micros)
-    
+
     def _cache_repr(self):
         return super()._cache_repr() + '(' + str(self._min_micros) + ',' + str(self._max_micros) + ')'
 
@@ -752,7 +752,6 @@ def skip_if_not_utc():
 
 # Note: Current(2023/06/06) maxmium IT data size is 7282688 bytes, so LRU cache with maxsize 128
 # will lead to 7282688 * 128 = 932 MB additional memory usage in edge case, which is acceptable.
-@lru_cache(maxsize=128, typed=True)
 def gen_df_help(data_gen, length, seed):
     rand = random.Random(seed)
     data_gen.start(rand)
