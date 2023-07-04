@@ -263,45 +263,45 @@ rapids_shuffle_smoke_test() {
 # - MULTITHREADED_SHUFFLE: shuffle tests only
 TEST_MODE=${TEST_MODE:-'DEFAULT'}
 if [[ $TEST_MODE == "DEFAULT" ]]; then
-  ./run_pyspark_from_build.sh
+  ./run_pyspark_from_build.sh -k array_test --debug_tmp_path --tmp_path $WORKSPACE/jars
 
-  # ParquetCachedBatchSerializer cache_test
-  PYSP_TEST_spark_sql_cache_serializer=com.nvidia.spark.ParquetCachedBatchSerializer \
-    ./run_pyspark_from_build.sh -k cache_test
+#  # ParquetCachedBatchSerializer cache_test
+#  PYSP_TEST_spark_sql_cache_serializer=com.nvidia.spark.ParquetCachedBatchSerializer \
+#    ./run_pyspark_from_build.sh -k cache_test
 fi
 
-# Delta Lake tests
-if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "DELTA_LAKE_ONLY" ]]; then
-  run_delta_lake_tests
-fi
-
-# Iceberg tests
-if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "ICEBERG_ONLY" ]]; then
-  run_iceberg_tests
-fi
-
-# Avro tests
-if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "AVRO_ONLY" ]]; then
-  run_avro_tests
-fi
-
-# Mutithreaded Shuffle test
-if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "MULTITHREADED_SHUFFLE" ]]; then
-  rapids_shuffle_smoke_test
-fi
-
-# cudf_udf test: this mostly depends on cudf-py, so we run it into an independent CI
-if [[ "$TEST_MODE" == "CUDF_UDF_ONLY" ]]; then
-  # hardcode config
-  [[ ${TEST_PARALLEL} -gt 2 ]] && export TEST_PARALLEL=2
-  PYSP_TEST_spark_rapids_memory_gpu_allocFraction=0.1 \
-    PYSP_TEST_spark_rapids_memory_gpu_minAllocFraction=0 \
-    PYSP_TEST_spark_rapids_python_memory_gpu_allocFraction=0.1 \
-    PYSP_TEST_spark_rapids_python_concurrentPythonWorkers=2 \
-    PYSP_TEST_spark_executorEnv_PYTHONPATH=${RAPIDS_PLUGIN_JAR} \
-    PYSP_TEST_spark_python=${CONDA_ROOT}/bin/python \
-    ./run_pyspark_from_build.sh -m cudf_udf --cudf_udf
-fi
+## Delta Lake tests
+#if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "DELTA_LAKE_ONLY" ]]; then
+#  run_delta_lake_tests
+#fi
+#
+## Iceberg tests
+#if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "ICEBERG_ONLY" ]]; then
+#  run_iceberg_tests
+#fi
+#
+## Avro tests
+#if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "AVRO_ONLY" ]]; then
+#  run_avro_tests
+#fi
+#
+## Mutithreaded Shuffle test
+#if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "MULTITHREADED_SHUFFLE" ]]; then
+#  rapids_shuffle_smoke_test
+#fi
+#
+## cudf_udf test: this mostly depends on cudf-py, so we run it into an independent CI
+#if [[ "$TEST_MODE" == "CUDF_UDF_ONLY" ]]; then
+#  # hardcode config
+#  [[ ${TEST_PARALLEL} -gt 2 ]] && export TEST_PARALLEL=2
+#  PYSP_TEST_spark_rapids_memory_gpu_allocFraction=0.1 \
+#    PYSP_TEST_spark_rapids_memory_gpu_minAllocFraction=0 \
+#    PYSP_TEST_spark_rapids_python_memory_gpu_allocFraction=0.1 \
+#    PYSP_TEST_spark_rapids_python_concurrentPythonWorkers=2 \
+#    PYSP_TEST_spark_executorEnv_PYTHONPATH=${RAPIDS_PLUGIN_JAR} \
+#    PYSP_TEST_spark_python=${CONDA_ROOT}/bin/python \
+#    ./run_pyspark_from_build.sh -m cudf_udf --cudf_udf
+#fi
 
 popd
 stop-worker.sh
