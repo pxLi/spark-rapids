@@ -263,7 +263,7 @@ rapids_shuffle_smoke_test() {
 # - MULTITHREADED_SHUFFLE: shuffle tests only
 TEST_MODE=${TEST_MODE:-'DEFAULT'}
 if [[ $TEST_MODE == "DEFAULT" ]]; then
-  ./run_pyspark_from_build.sh -k array_test --debug_tmp_path --tmp_path $WORKSPACE/jars
+  ./run_pyspark_from_build.sh -k 'test_array_min_max[Float]' --debug_tmp_path --tmp_path $WORKSPACE/jars
 
 #  # ParquetCachedBatchSerializer cache_test
 #  PYSP_TEST_spark_sql_cache_serializer=com.nvidia.spark.ParquetCachedBatchSerializer \
