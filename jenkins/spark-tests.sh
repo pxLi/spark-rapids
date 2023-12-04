@@ -122,7 +122,9 @@ CONDA_ROOT=`conda config --show root_prefix | cut -d ' ' -f2`
 PYTHON_VER=`conda config --show default_python | cut -d ' ' -f2`
 # Put conda package path ahead of the env 'PYTHONPATH',
 # to import the right pandas from conda instead of spark binary path.
-export PYTHONPATH="$CONDA_ROOT/lib/python$PYTHON_VER/site-packages:$PYTHONPATH"
+if [[ "$CONDA_ROOT"x != x ]]; then
+  export PYTHONPATH="$CONDA_ROOT/lib/python$PYTHON_VER/site-packages:$PYTHONPATH"
+fi
 
 
 echo "----------------------------START TEST------------------------------------"
