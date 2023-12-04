@@ -125,7 +125,7 @@ if [[ x"$CONDA_ROOT" != x ]]; then
   PYTHON_VER=`conda config --show default_python | cut -d ' ' -f2`
   export PYTHONPATH="$CONDA_ROOT/lib/python$PYTHON_VER/site-packages:$PYTHONPATH"
 else
-  DEFAULT_SITE_PACKAGES=$(python -c "import sysconfig; print(sysconfig.get_path('purelib'))")
+  DEFAULT_SITE_PACKAGES=$(python -c "import site; print(site.getsitepackages()[0])")
   export PYTHONPATH="$DEFAULT_SITE_PACKAGES:$PYTHONPATH"
 fi
 
