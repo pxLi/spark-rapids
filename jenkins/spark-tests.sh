@@ -337,6 +337,9 @@ if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "PYARROW_ONLY" ]]; then
   run_pyarrow_tests
 fi
 
+if [[ "$TEST_MODE" == "UDF_ONLY" ]]; then
+  ./run_pyspark_from_build.sh -k udf_test
+fi
 # Non-UTC time zone tests
 if [[ "$TEST_MODE" == "NON_UTC_TZ" ]]; then
   run_non_utc_time_zone_tests
