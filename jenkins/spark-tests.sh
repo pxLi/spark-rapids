@@ -115,15 +115,18 @@ TMP_PYTHON=/tmp/$(date +"%Y%m%d")
 rm -rf $TMP_PYTHON && mkdir -p $TMP_PYTHON && cp -r $SPARK_HOME/python $TMP_PYTHON
 # Get the correct py4j file.
 PY4J_FILE=$(find $TMP_PYTHON/python/lib -type f -iname "py4j*.zip")
-export PYTHONPATH=$TMP_PYTHON/python:$PY4J_FILE
+export PYTHONPATH=$TMP_PYTHON/python:$TMP_PYTHON/python/pyspark/:$PY4J_FILE
 
 # Extract 'value' from conda config string 'key: value'
 CONDA_ROOT=`conda config --show root_prefix | cut -d ' ' -f2`
-PYTHON_VER=`conda config --show default_python | cut -d ' ' -f2`
-# Put conda package path ahead of the env 'PYTHONPATH',
-# to import the right pandas from conda instead of spark binary path.
-if [[ "$CONDA_ROOT"x != x ]]; then
+if [[ x"CONDA_ROOT" != x ]]; then
+  # Put conda package path ahead of the env 'PYTHONPATH',
+  # to import the right pandas from conda instead of spark binary path.
+  PYTHON_VER=`conda config --show default_python | cut -d ' ' -f2`
   export PYTHONPATH="$CONDA_ROOT/lib/python$PYTHON_VER/site-packages:$PYTHONPATH"
+else
+  DEFAULT_SITE_PACKAGES=$(python -c "import sysconfig; print(sysconfig.get_path('purelib'))")
+  export PYTHONPATH="$DEFAULT_SITE_PACKAGES:$PYTHONPATH"
 fi
 
 
