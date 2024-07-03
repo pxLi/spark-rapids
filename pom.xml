@@ -196,14 +196,10 @@
             </activation>
             <properties>
                 <buildver>321cdh</buildver>
-                <scala.plugin.version>4.3.0</scala.plugin.version>
                 <spark.version>${spark321cdh.version}</spark.version>
                 <spark.test.version>${spark321cdh.version}</spark.test.version>
                 <parquet.hadoop.version>1.10.1</parquet.hadoop.version>
                 <cloudera.repo.enabled>true</cloudera.repo.enabled>
-                <!-- Keeping the scala plugin version 4.3.0 for details
-                check https://github.com/NVIDIA/spark-rapids/issues/11112 -->
-                <scala.plugin.version>4.3.0</scala.plugin.version>
             </properties>
             <modules>
                 <module>shim-deps/cloudera</module>
@@ -462,15 +458,11 @@
             </activation>
             <properties>
                 <buildver>330cdh</buildver>
-                <scala.plugin.version>4.3.0</scala.plugin.version>
                 <spark.version>${spark330cdh.version}</spark.version>
                 <spark.test.version>${spark330cdh.version}</spark.test.version>
                 <parquet.hadoop.version>1.10.99.7.1.8.0-801</parquet.hadoop.version>
                 <iceberg.version>${spark330.iceberg.version}</iceberg.version>
                 <cloudera.repo.enabled>true</cloudera.repo.enabled>
-                <!-- Keeping the scala plugin version 4.3.0 for details
-                check https://github.com/NVIDIA/spark-rapids/issues/11112 -->
-                <scala.plugin.version>4.3.0</scala.plugin.version>
             </properties>
             <modules>
                 <module>shim-deps/cloudera</module>
@@ -489,15 +481,11 @@
             </activation>
             <properties>
                 <buildver>332cdh</buildver>
-                <scala.plugin.version>4.3.0</scala.plugin.version>
                 <spark.version>${spark332cdh.version}</spark.version>
                 <spark.test.version>${spark332cdh.version}</spark.test.version>
                 <parquet.hadoop.version>1.10.99.7.1.9.0-387</parquet.hadoop.version>
                 <iceberg.version>${spark330.iceberg.version}</iceberg.version>
                 <cloudera.repo.enabled>true</cloudera.repo.enabled>
-                <!-- Keeping the scala plugin version 4.3.0 for details
-                check https://github.com/NVIDIA/spark-rapids/issues/11112 -->
-                <scala.plugin.version>4.3.0</scala.plugin.version>
             </properties>
             <modules>
                 <module>shim-deps/cloudera</module>
