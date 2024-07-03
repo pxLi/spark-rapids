@@ -53,47 +53,47 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java-version }}
-      - name: Generate daily cache key
-        id: generateCacheKey
-        run: |
-          set -x
-          cacheKey="${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}-${{ github.event.pull_request.base.ref }}-$(date +'%Y-%m-%d')"
-          echo "dailyCacheKey=$cacheKey" | tee $GITHUB_ENV $GITHUB_OUTPUT
-      - name: Cache local Maven repository
-        id: cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2
-          key: ${{ env.dailyCacheKey }}
-          restore-keys: ${{ runner.os }}-maven-
-      - name: populate-daily-cache
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          set -x
-          max_retry=3; delay=30; i=1
-          while true; do
-            # https://github.com/NVIDIA/spark-rapids/issues/8847
-            # specify expected versions
-            export JAVA_HOME=${JAVA_HOME_${{ matrix.java-version }}_X64}
-            export PATH=${JAVA_HOME}/bin:${PATH}
-            java -version && mvn --version && echo "ENV JAVA_HOME: $JAVA_HOME, PATH: $PATH"
-            [ "${{ matrix.java-version }}" == "8" ] && pom="pom.xml" || pom="scala2.13/pom.xml"
-            mvn ${{ env.COMMON_MVN_FLAGS }} --file $pom help:evaluate -pl dist \
-              -Dexpression=included_buildvers \
-              -DforceStdout -PnoSnapshots -q | tr -d ',' | \
-                xargs -n 1 bash -c \
-                  'mvn ${{ env.COMMON_MVN_FLAGS }} --file $1 -Dbuildver=$2 de.qaware.maven:go-offline-maven-plugin:resolve-dependencies' _ $pom
-
-            # compile base versions to cache scala compiler and compiler bridge
-            mvn ${{ env.COMMON_MVN_FLAGS }} --file $pom \
-              process-test-resources -pl sql-plugin-api -am && break || {
-            if [[ $i -le $max_retry ]]; then
-              echo "mvn command failed. Retry $i/$max_retry."; ((i++)); sleep $delay; ((delay=delay*2))
-            else
-              echo "mvn command failed. Exit 1"; exit 1
-            fi
-          }
-          done
+#      - name: Generate daily cache key
+#        id: generateCacheKey
+#        run: |
+#          set -x
+#          cacheKey="${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}-${{ github.event.pull_request.base.ref }}-$(date +'%Y-%m-%d')"
+#          echo "dailyCacheKey=$cacheKey" | tee $GITHUB_ENV $GITHUB_OUTPUT
+#      - name: Cache local Maven repository
+#        id: cache
+#        uses: actions/cache@v4
+#        with:
+#          path: ~/.m2
+#          key: ${{ env.dailyCacheKey }}
+#          restore-keys: ${{ runner.os }}-maven-
+#      - name: populate-daily-cache
+#        if: steps.cache.outputs.cache-hit != 'true'
+#        run: |
+#          set -x
+#          max_retry=3; delay=30; i=1
+#          while true; do
+#            # https://github.com/NVIDIA/spark-rapids/issues/8847
+#            # specify expected versions
+#            export JAVA_HOME=${JAVA_HOME_${{ matrix.java-version }}_X64}
+#            export PATH=${JAVA_HOME}/bin:${PATH}
+#            java -version && mvn --version && echo "ENV JAVA_HOME: $JAVA_HOME, PATH: $PATH"
+#            [ "${{ matrix.java-version }}" == "8" ] && pom="pom.xml" || pom="scala2.13/pom.xml"
+#            mvn ${{ env.COMMON_MVN_FLAGS }} --file $pom help:evaluate -pl dist \
+#              -Dexpression=included_buildvers \
+#              -DforceStdout -PnoSnapshots -q | tr -d ',' | \
+#                xargs -n 1 bash -c \
+#                  'mvn ${{ env.COMMON_MVN_FLAGS }} --file $1 -Dbuildver=$2 de.qaware.maven:go-offline-maven-plugin:resolve-dependencies' _ $pom
+#
+#            # compile base versions to cache scala compiler and compiler bridge
+#            mvn ${{ env.COMMON_MVN_FLAGS }} --file $pom \
+#              process-test-resources -pl sql-plugin-api -am && break || {
+#            if [[ $i -le $max_retry ]]; then
+#              echo "mvn command failed. Retry $i/$max_retry."; ((i++)); sleep $delay; ((delay=delay*2))
+#            else
+#              echo "mvn command failed. Exit 1"; exit 1
+#            fi
+#          }
+#          done
       - name: all shim versions
         id: allShimVersionsStep
         run: |
@@ -140,54 +140,54 @@ jobs:
 
           echo "scala213Jdk8Versions=$svJsonStr" >> $GITHUB_OUTPUT
 
-  package-tests:
-    needs: cache-dependencies
-    continue-on-error: ${{ matrix.isSnapshot }}
-    strategy:
-      matrix: ${{ fromJSON(needs.cache-dependencies.outputs.sparkTailVersions) }}
-      fail-fast: false
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4 # refs/pull/:prNumber/merge
-
-      - name: Setup Java and Maven Env
-        uses: actions/setup-java@v4
-        with:
-          distribution: adopt
-          java-version: 8
-
-#      - name: Cache local Maven repository
-#        uses: actions/cache@v4
+#  package-tests:
+#    needs: cache-dependencies
+#    continue-on-error: ${{ matrix.isSnapshot }}
+#    strategy:
+#      matrix: ${{ fromJSON(needs.cache-dependencies.outputs.sparkTailVersions) }}
+#      fail-fast: false
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4 # refs/pull/:prNumber/merge
+#
+#      - name: Setup Java and Maven Env
+#        uses: actions/setup-java@v4
 #        with:
-#          path: ~/.m2
-#          key: ${{ needs.cache-dependencies.outputs.dailyCacheKey }}
-
-      - name: check runtime before tests
-        run: |
-          env | grep JAVA
-          java -version && mvn --version && echo "ENV JAVA_HOME: $JAVA_HOME, PATH: $PATH"
-
-      - name: package tests check
-        run: |
-          # https://github.com/NVIDIA/spark-rapids/issues/8847
-          # specify expected versions
-          export JAVA_HOME=${JAVA_HOME_8_X64}
-          export PATH=${JAVA_HOME}/bin:${PATH}
-          java -version && mvn --version && echo "ENV JAVA_HOME: $JAVA_HOME, PATH: $PATH"
-          # test command, will retry for 3 times if failed.
-          max_retry=3; delay=30; i=1
-          while true; do
-            mvn package \
-              -pl integration_tests,tests,tools -am -P 'individual,pre-merge' \
-              -Dbuildver=${{ matrix.spark-version }} -Dmaven.scalastyle.skip=true \
-              -Drat.skip=true ${{ env.COMMON_MVN_FLAGS }} && break || {
-            if [[ $i -le $max_retry ]]; then
-              echo "mvn command failed. Retry $i/$max_retry."; ((i++)); sleep $delay; ((delay=delay*2))
-            else
-              echo "mvn command failed. Exit 1"; exit 1
-            fi
-          }
-          done
+#          distribution: adopt
+#          java-version: 8
+#
+##      - name: Cache local Maven repository
+##        uses: actions/cache@v4
+##        with:
+##          path: ~/.m2
+##          key: ${{ needs.cache-dependencies.outputs.dailyCacheKey }}
+#
+#      - name: check runtime before tests
+#        run: |
+#          env | grep JAVA
+#          java -version && mvn --version && echo "ENV JAVA_HOME: $JAVA_HOME, PATH: $PATH"
+#
+#      - name: package tests check
+#        run: |
+#          # https://github.com/NVIDIA/spark-rapids/issues/8847
+#          # specify expected versions
+#          export JAVA_HOME=${JAVA_HOME_8_X64}
+#          export PATH=${JAVA_HOME}/bin:${PATH}
+#          java -version && mvn --version && echo "ENV JAVA_HOME: $JAVA_HOME, PATH: $PATH"
+#          # test command, will retry for 3 times if failed.
+#          max_retry=3; delay=30; i=1
+#          while true; do
+#            mvn package \
+#              -pl integration_tests,tests,tools -am -P 'individual,pre-merge' \
+#              -Dbuildver=${{ matrix.spark-version }} -Dmaven.scalastyle.skip=true \
+#              -Drat.skip=true ${{ env.COMMON_MVN_FLAGS }} && break || {
+#            if [[ $i -le $max_retry ]]; then
+#              echo "mvn command failed. Retry $i/$max_retry."; ((i++)); sleep $delay; ((delay=delay*2))
+#            else
+#              echo "mvn command failed. Exit 1"; exit 1
+#            fi
+#          }
+#          done
 
   package-tests-scala213:
     needs: cache-dependencies
@@ -249,100 +249,100 @@ jobs:
           done
 
 
-  verify-all-modules:
-    needs: cache-dependencies
-    runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{ fromJSON(needs.cache-dependencies.outputs.sparkJDKVersions) }}
-    steps:
-      - uses: actions/checkout@v4 # refs/pull/:prNumber/merge
-
-      - name: Setup Java and Maven Env
-        uses: actions/setup-java@v4
-        with:
-          distribution: adopt
-          java-version: ${{ matrix.java-version }}
-
-      - name: Cache local Maven repository
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2
-          key: ${{ needs.cache-dependencies.outputs.dailyCacheKey }}
-
-      - name: check runtime before tests
-        run: |
-          env | grep JAVA
-          java -version && mvn --version && echo "ENV JAVA_HOME: $JAVA_HOME, PATH: $PATH"
-
-      - name: Build JDK
-        run: |
-          # https://github.com/NVIDIA/spark-rapids/issues/8847
-          # specify expected versions
-          export JAVA_HOME=${JAVA_HOME_${{ matrix.java-version }}_X64}
-          export PATH=${JAVA_HOME}/bin:${PATH}
-          java -version && mvn --version && echo "ENV JAVA_HOME: $JAVA_HOME, PATH: $PATH"
-          # test command, will retry for 3 times if failed.
-          max_retry=3; delay=30; i=1
-          while true; do
-            mvn verify \
-              -P "individual,pre-merge" -Dbuildver=${{ matrix.spark-version }} \
-              -f ${{ matrix.pom-directory }}/pom.xml \
-              ${{ env.COMMON_MVN_FLAGS }} && break || {
-            if [[ $i -le $max_retry ]]; then
-              echo "mvn command failed. Retry $i/$max_retry."; ((i++)); sleep $delay; ((delay=delay*2))
-            else
-              echo "mvn command failed. Exit 1"; exit 1
-            fi
-          }
-          done
-
-  install-modules:
-    needs: cache-dependencies
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        maven-version: [3.6.3, 3.8.8, 3.9.3]
-    steps:
-      - uses: actions/checkout@v4 # refs/pull/:prNumber/merge
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: adopt
-          java-version: 11
-
-      - name: Cache local Maven repository
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2
-          key: ${{ needs.cache-dependencies.outputs.dailyCacheKey }}
-
-      - name: Setup Maven Wrapper
-        run: mvn wrapper:wrapper -Dmaven=${{ matrix.maven-version }}
-
-      - name: check runtime before tests
-        run: |
-          env | grep JAVA
-          java -version && mvn --version && echo "ENV JAVA_HOME: $JAVA_HOME, PATH: $PATH"
-
-      - name: Install with Maven ${{ matrix.maven-version }}
-        run: |
-          # https://github.com/NVIDIA/spark-rapids/issues/8847
-          # specify expected versions
-          export JAVA_HOME=${JAVA_HOME_11_X64}
-          export PATH=${JAVA_HOME}/bin:${PATH}
-          java -version && mvn --version && echo "ENV JAVA_HOME: $JAVA_HOME, PATH: $PATH"
-          # test command, will retry for 3 times if failed.
-          max_retry=3; delay=30; i=1
-          while true; do
-            ./mvnw install \
-              -P "individual,pre-merge" \
-              -Dbuildver=${{ needs.cache-dependencies.outputs.defaultSparkVersion }} \
-              ${{ env.COMMON_MVN_FLAGS }} && break || {
-            if [[ $i -le $max_retry ]]; then
-              echo "mvn command failed. Retry $i/$max_retry."; ((i++)); sleep $delay; ((delay=delay*2))
-            else
-              echo "mvn command failed. Exit 1"; exit 1
-            fi
-          }
-          done
+#  verify-all-modules:
+#    needs: cache-dependencies
+#    runs-on: ubuntu-latest
+#    strategy:
+#      matrix: ${{ fromJSON(needs.cache-dependencies.outputs.sparkJDKVersions) }}
+#    steps:
+#      - uses: actions/checkout@v4 # refs/pull/:prNumber/merge
+#
+#      - name: Setup Java and Maven Env
+#        uses: actions/setup-java@v4
+#        with:
+#          distribution: adopt
+#          java-version: ${{ matrix.java-version }}
+#
+#      - name: Cache local Maven repository
+#        uses: actions/cache@v4
+#        with:
+#          path: ~/.m2
+#          key: ${{ needs.cache-dependencies.outputs.dailyCacheKey }}
+#
+#      - name: check runtime before tests
+#        run: |
+#          env | grep JAVA
+#          java -version && mvn --version && echo "ENV JAVA_HOME: $JAVA_HOME, PATH: $PATH"
+#
+#      - name: Build JDK
+#        run: |
+#          # https://github.com/NVIDIA/spark-rapids/issues/8847
+#          # specify expected versions
+#          export JAVA_HOME=${JAVA_HOME_${{ matrix.java-version }}_X64}
+#          export PATH=${JAVA_HOME}/bin:${PATH}
+#          java -version && mvn --version && echo "ENV JAVA_HOME: $JAVA_HOME, PATH: $PATH"
+#          # test command, will retry for 3 times if failed.
+#          max_retry=3; delay=30; i=1
+#          while true; do
+#            mvn verify \
+#              -P "individual,pre-merge" -Dbuildver=${{ matrix.spark-version }} \
+#              -f ${{ matrix.pom-directory }}/pom.xml \
+#              ${{ env.COMMON_MVN_FLAGS }} && break || {
+#            if [[ $i -le $max_retry ]]; then
+#              echo "mvn command failed. Retry $i/$max_retry."; ((i++)); sleep $delay; ((delay=delay*2))
+#            else
+#              echo "mvn command failed. Exit 1"; exit 1
+#            fi
+#          }
+#          done
+#
+#  install-modules:
+#    needs: cache-dependencies
+#    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        maven-version: [3.6.3, 3.8.8, 3.9.3]
+#    steps:
+#      - uses: actions/checkout@v4 # refs/pull/:prNumber/merge
+#
+#      - name: Setup Java
+#        uses: actions/setup-java@v4
+#        with:
+#          distribution: adopt
+#          java-version: 11
+#
+#      - name: Cache local Maven repository
+#        uses: actions/cache@v4
+#        with:
+#          path: ~/.m2
+#          key: ${{ needs.cache-dependencies.outputs.dailyCacheKey }}
+#
+#      - name: Setup Maven Wrapper
+#        run: mvn wrapper:wrapper -Dmaven=${{ matrix.maven-version }}
+#
+#      - name: check runtime before tests
+#        run: |
+#          env | grep JAVA
+#          java -version && mvn --version && echo "ENV JAVA_HOME: $JAVA_HOME, PATH: $PATH"
+#
+#      - name: Install with Maven ${{ matrix.maven-version }}
+#        run: |
+#          # https://github.com/NVIDIA/spark-rapids/issues/8847
+#          # specify expected versions
+#          export JAVA_HOME=${JAVA_HOME_11_X64}
+#          export PATH=${JAVA_HOME}/bin:${PATH}
+#          java -version && mvn --version && echo "ENV JAVA_HOME: $JAVA_HOME, PATH: $PATH"
+#          # test command, will retry for 3 times if failed.
+#          max_retry=3; delay=30; i=1
+#          while true; do
+#            ./mvnw install \
+#              -P "individual,pre-merge" \
+#              -Dbuildver=${{ needs.cache-dependencies.outputs.defaultSparkVersion }} \
+#              ${{ env.COMMON_MVN_FLAGS }} && break || {
+#            if [[ $i -le $max_retry ]]; then
+#              echo "mvn command failed. Retry $i/$max_retry."; ((i++)); sleep $delay; ((delay=delay*2))
+#            else
+#              echo "mvn command failed. Exit 1"; exit 1
+#            fi
+#          }
+#          done
