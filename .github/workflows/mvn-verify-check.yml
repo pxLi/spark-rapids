@@ -140,54 +140,54 @@ jobs:
 
           echo "scala213Jdk8Versions=$svJsonStr" >> $GITHUB_OUTPUT
 
-#  package-tests:
-#    needs: cache-dependencies
-#    continue-on-error: ${{ matrix.isSnapshot }}
-#    strategy:
-#      matrix: ${{ fromJSON(needs.cache-dependencies.outputs.sparkTailVersions) }}
-#      fail-fast: false
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v4 # refs/pull/:prNumber/merge
-#
-#      - name: Setup Java and Maven Env
-#        uses: actions/setup-java@v4
+  package-tests:
+    needs: cache-dependencies
+    continue-on-error: ${{ matrix.isSnapshot }}
+    strategy:
+      matrix: ${{ fromJSON(needs.cache-dependencies.outputs.sparkTailVersions) }}
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4 # refs/pull/:prNumber/merge
+
+      - name: Setup Java and Maven Env
+        uses: actions/setup-java@v4
+        with:
+          distribution: adopt
+          java-version: 8
+
+#      - name: Cache local Maven repository
+#        uses: actions/cache@v4
 #        with:
-#          distribution: adopt
-#          java-version: 8
-#
-##      - name: Cache local Maven repository
-##        uses: actions/cache@v4
-##        with:
-##          path: ~/.m2
-##          key: ${{ needs.cache-dependencies.outputs.dailyCacheKey }}
-#
-#      - name: check runtime before tests
-#        run: |
-#          env | grep JAVA
-#          java -version && mvn --version && echo "ENV JAVA_HOME: $JAVA_HOME, PATH: $PATH"
-#
-#      - name: package tests check
-#        run: |
-#          # https://github.com/NVIDIA/spark-rapids/issues/8847
-#          # specify expected versions
-#          export JAVA_HOME=${JAVA_HOME_8_X64}
-#          export PATH=${JAVA_HOME}/bin:${PATH}
-#          java -version && mvn --version && echo "ENV JAVA_HOME: $JAVA_HOME, PATH: $PATH"
-#          # test command, will retry for 3 times if failed.
-#          max_retry=3; delay=30; i=1
-#          while true; do
-#            mvn package \
-#              -pl integration_tests,tests,tools -am -P 'individual,pre-merge' \
-#              -Dbuildver=${{ matrix.spark-version }} -Dmaven.scalastyle.skip=true \
-#              -Drat.skip=true ${{ env.COMMON_MVN_FLAGS }} && break || {
-#            if [[ $i -le $max_retry ]]; then
-#              echo "mvn command failed. Retry $i/$max_retry."; ((i++)); sleep $delay; ((delay=delay*2))
-#            else
-#              echo "mvn command failed. Exit 1"; exit 1
-#            fi
-#          }
-#          done
+#          path: ~/.m2
+#          key: ${{ needs.cache-dependencies.outputs.dailyCacheKey }}
+
+      - name: check runtime before tests
+        run: |
+          env | grep JAVA
+          java -version && mvn --version && echo "ENV JAVA_HOME: $JAVA_HOME, PATH: $PATH"
+
+      - name: package tests check
+        run: |
+          # https://github.com/NVIDIA/spark-rapids/issues/8847
+          # specify expected versions
+          export JAVA_HOME=${JAVA_HOME_8_X64}
+          export PATH=${JAVA_HOME}/bin:${PATH}
+          java -version && mvn --version && echo "ENV JAVA_HOME: $JAVA_HOME, PATH: $PATH"
+          # test command, will retry for 3 times if failed.
+          max_retry=3; delay=30; i=1
+          while true; do
+            mvn package \
+              -pl integration_tests,tests,tools -am -P 'individual,pre-merge' \
+              -Dbuildver=${{ matrix.spark-version }} -Dmaven.scalastyle.skip=true \
+              -Drat.skip=true ${{ env.COMMON_MVN_FLAGS }} && break || {
+            if [[ $i -le $max_retry ]]; then
+              echo "mvn command failed. Retry $i/$max_retry."; ((i++)); sleep $delay; ((delay=delay*2))
+            else
+              echo "mvn command failed. Exit 1"; exit 1
+            fi
+          }
+          done
 
   package-tests-scala213:
     needs: cache-dependencies
