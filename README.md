@@ -19,6 +19,9 @@ To get started and try the plugin out use the [getting started guide](./docs/get
 
 ## Compatibility
 
+
+
+
 The SQL plugin tries to produce results that are bit for bit identical with Apache Spark.
 Operator compatibility is documented [here](./docs/compatibility.md)
 
