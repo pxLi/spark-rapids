@@ -3,6 +3,7 @@
 NOTE: For the latest stable [README.md](https://github.com/nvidia/spark-rapids/blob/main/README.md) ensure you are on the main branch.
 
 The RAPIDS Accelerator for Apache Spark provides a set of plugins for
+
 [Apache Spark](https://spark.apache.org) that leverage GPUs to accelerate processing 
 via the [RAPIDS](https://rapids.ai) libraries.
 
