@@ -9,6 +9,9 @@ via the [RAPIDS](https://rapids.ai) libraries and [UCX](https://www.openucx.org/
 ![TPCxBB Like query results](./docs/img/tpcxbb-like-results.png "TPCxBB Like Query Results")
 
 The chart above shows results from running ETL queries based off of the 
+
+
+
 [TPCxBB benchmark](http://www.tpc.org/tpcx-bb/default.asp). These are **not** official results in
 any way. It uses a 10TB Dataset (scale factor 10,000), stored in parquet. The processing happened on
 a two node DGX-2 cluster. Each node has 96 CPU cores, 1.5TB host memory, 16 V100 GPUs, and 512 GB
