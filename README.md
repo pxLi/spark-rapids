@@ -4,6 +4,8 @@ The RAPIDS Accelerator for Apache Spark provides a set of plugins for
 [Apache Spark](https://spark.apache.org) that leverage GPUs to accelerate processing
 via the [RAPIDS](https://rapids.ai) libraries and [UCX](https://www.openucx.org/).
 
+
+
 ![TPCxBB Like query results](./docs/img/tpcxbb-like-results.png "TPCxBB Like Query Results")
 
 The chart above shows results from running ETL queries based off of the 
