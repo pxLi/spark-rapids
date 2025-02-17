@@ -123,7 +123,7 @@ fi
 
 
 echo "----------------------------START TEST------------------------------------"
-pushd $RAPIDS_INT_TESTS_HOME
+#pushd $RAPIDS_INT_TESTS_HOME
 export TEST_TYPE="nightly"
 export LOCAL_JAR_PATH=$ARTF_ROOT
 
@@ -359,6 +359,6 @@ if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "HYBRID_EXECUTION" ]]; then
   fi
 fi
 
-popd
+#popd
 stop-worker.sh
 stop-master.sh
