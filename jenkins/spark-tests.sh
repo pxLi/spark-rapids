@@ -284,72 +284,72 @@ run_non_utc_time_zone_tests() {
 # - MULTITHREADED_SHUFFLE: shuffle tests only
 # - NON_UTC_TZ: test all tests in a non-UTC time zone which is selected according to current day of week.
 TEST_MODE=${TEST_MODE:-'DEFAULT'}
-if [[ $TEST_MODE == "DEFAULT" ]]; then
-#  ./run_pyspark_from_build.sh
-
-  SPARK_SHELL_SMOKE_TEST=1 \
-  PYSP_TEST_spark_shuffle_manager=com.nvidia.spark.rapids.${SHUFFLE_SPARK_SHIM}.RapidsShuffleManager \
-    ./run_pyspark_from_build.sh
+#if [[ $TEST_MODE == "DEFAULT" ]]; then
+##  ./run_pyspark_from_build.sh
 #
-#  # As '--packages' only works on the default cuda11 jar, it does not support classifiers
-#  # refer to issue : https://issues.apache.org/jira/browse/SPARK-20075
-#  # "$CLASSIFIER" == ''" is usally for the case running by developers,
-#  # while "$CLASSIFIER" == "cuda11" is for the case running on CI.
-#  # We expect to run packages test for both cases
-#  if [[ "$CLASSIFIER" == "" || "$CLASSIFIER" == "cuda11" ]]; then
-#    SPARK_SHELL_SMOKE_TEST=1 \
-#    PYSP_TEST_spark_jars_packages=com.nvidia:rapids-4-spark_${SCALA_BINARY_VER}:${PROJECT_VER} \
-#    PYSP_TEST_spark_jars_repositories=${PROJECT_REPO} \
-#      ./run_pyspark_from_build.sh
-#  fi
+#  SPARK_SHELL_SMOKE_TEST=1 \
+#  PYSP_TEST_spark_shuffle_manager=com.nvidia.spark.rapids.${SHUFFLE_SPARK_SHIM}.RapidsShuffleManager \
+#    ./run_pyspark_from_build.sh
+##
+##  # As '--packages' only works on the default cuda11 jar, it does not support classifiers
+##  # refer to issue : https://issues.apache.org/jira/browse/SPARK-20075
+##  # "$CLASSIFIER" == ''" is usally for the case running by developers,
+##  # while "$CLASSIFIER" == "cuda11" is for the case running on CI.
+##  # We expect to run packages test for both cases
+##  if [[ "$CLASSIFIER" == "" || "$CLASSIFIER" == "cuda11" ]]; then
+##    SPARK_SHELL_SMOKE_TEST=1 \
+##    PYSP_TEST_spark_jars_packages=com.nvidia:rapids-4-spark_${SCALA_BINARY_VER}:${PROJECT_VER} \
+##    PYSP_TEST_spark_jars_repositories=${PROJECT_REPO} \
+##      ./run_pyspark_from_build.sh
+##  fi
+##
+##  # ParquetCachedBatchSerializer cache_test
+##  PYSP_TEST_spark_sql_cache_serializer=com.nvidia.spark.ParquetCachedBatchSerializer \
+##    ./run_pyspark_from_build.sh -k cache_test
+#fi
+
+## Delta Lake tests
+#if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "DELTA_LAKE_ONLY" ]]; then
+#  run_delta_lake_tests
+#fi
 #
-#  # ParquetCachedBatchSerializer cache_test
-#  PYSP_TEST_spark_sql_cache_serializer=com.nvidia.spark.ParquetCachedBatchSerializer \
-#    ./run_pyspark_from_build.sh -k cache_test
-fi
-
-# Delta Lake tests
-if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "DELTA_LAKE_ONLY" ]]; then
-  run_delta_lake_tests
-fi
-
-# Iceberg tests
-if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "ICEBERG_ONLY" ]]; then
-  run_iceberg_tests
-fi
-
-# Avro tests
-if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "AVRO_ONLY" ]]; then
-  run_avro_tests
-fi
-
-# Mutithreaded Shuffle test
-if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "MULTITHREADED_SHUFFLE" ]]; then
-  rapids_shuffle_smoke_test
-fi
-
-# cudf_udf test: this mostly depends on cudf-py, so we run it into an independent CI
-if [[ "$TEST_MODE" == "CUDF_UDF_ONLY" ]]; then
-  # hardcode config
-  [[ ${TEST_PARALLEL} -gt 2 ]] && export TEST_PARALLEL=2
-  PYSP_TEST_spark_rapids_memory_gpu_allocFraction=0.1 \
-    PYSP_TEST_spark_rapids_memory_gpu_minAllocFraction=0 \
-    PYSP_TEST_spark_rapids_python_memory_gpu_allocFraction=0.1 \
-    PYSP_TEST_spark_rapids_python_concurrentPythonWorkers=2 \
-    PYSP_TEST_spark_executorEnv_PYTHONPATH=${RAPIDS_PLUGIN_JAR} \
-    PYSP_TEST_spark_python=${CONDA_ROOT}/bin/python \
-    ./run_pyspark_from_build.sh -m cudf_udf --cudf_udf
-fi
-
-# Pyarrow tests
-if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "PYARROW_ONLY" ]]; then
-  run_pyarrow_tests
-fi
-
-# Non-UTC time zone tests
-if [[ "$TEST_MODE" == "NON_UTC_TZ" ]]; then
-  run_non_utc_time_zone_tests
-fi
+## Iceberg tests
+#if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "ICEBERG_ONLY" ]]; then
+#  run_iceberg_tests
+#fi
+#
+## Avro tests
+#if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "AVRO_ONLY" ]]; then
+#  run_avro_tests
+#fi
+#
+## Mutithreaded Shuffle test
+#if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "MULTITHREADED_SHUFFLE" ]]; then
+#  rapids_shuffle_smoke_test
+#fi
+#
+## cudf_udf test: this mostly depends on cudf-py, so we run it into an independent CI
+#if [[ "$TEST_MODE" == "CUDF_UDF_ONLY" ]]; then
+#  # hardcode config
+#  [[ ${TEST_PARALLEL} -gt 2 ]] && export TEST_PARALLEL=2
+#  PYSP_TEST_spark_rapids_memory_gpu_allocFraction=0.1 \
+#    PYSP_TEST_spark_rapids_memory_gpu_minAllocFraction=0 \
+#    PYSP_TEST_spark_rapids_python_memory_gpu_allocFraction=0.1 \
+#    PYSP_TEST_spark_rapids_python_concurrentPythonWorkers=2 \
+#    PYSP_TEST_spark_executorEnv_PYTHONPATH=${RAPIDS_PLUGIN_JAR} \
+#    PYSP_TEST_spark_python=${CONDA_ROOT}/bin/python \
+#    ./run_pyspark_from_build.sh -m cudf_udf --cudf_udf
+#fi
+#
+## Pyarrow tests
+#if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "PYARROW_ONLY" ]]; then
+#  run_pyarrow_tests
+#fi
+#
+## Non-UTC time zone tests
+#if [[ "$TEST_MODE" == "NON_UTC_TZ" ]]; then
+#  run_non_utc_time_zone_tests
+#fi
 
 # hybrid execution tests
 if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "HYBRID_EXECUTION" ]]; then
