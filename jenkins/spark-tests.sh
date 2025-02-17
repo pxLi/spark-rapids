@@ -46,7 +46,7 @@ fi
 
 $WGET_CMD $PROJECT_TEST_REPO/com/nvidia/rapids-4-spark-integration-tests_$SCALA_BINARY_VER/$PROJECT_TEST_VER/rapids-4-spark-integration-tests_$SCALA_BINARY_VER-$PROJECT_TEST_VER-pytest.tar.gz
 
-RAPIDS_INT_TESTS_HOME="$ARTF_ROOT/integration_tests/"
+RAPIDS_INT_TESTS_HOME="$WORKSPACE/integration_tests/"
 # The version of pytest.tar.gz that is uploaded is the one built against spark320 but its being pushed without classifier for now
 RAPIDS_INT_TESTS_TGZ="$ARTF_ROOT/rapids-4-spark-integration-tests_${SCALA_BINARY_VER}-$PROJECT_TEST_VER-pytest.tar.gz"
 
@@ -123,7 +123,7 @@ fi
 
 
 echo "----------------------------START TEST------------------------------------"
-#pushd $RAPIDS_INT_TESTS_HOME
+pushd $RAPIDS_INT_TESTS_HOME
 export TEST_TYPE="nightly"
 export LOCAL_JAR_PATH=$ARTF_ROOT
 
@@ -359,6 +359,6 @@ if [[ "$TEST_MODE" == "DEFAULT" || "$TEST_MODE" == "HYBRID_EXECUTION" ]]; then
   fi
 fi
 
-#popd
+popd
 stop-worker.sh
 stop-master.sh
