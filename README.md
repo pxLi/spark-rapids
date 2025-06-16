@@ -34,6 +34,7 @@ The plugin has a set of Spark configs that control its behavior and are document
 
 
 
+
 We use github to track bugs, feature requests, and answer questions. File an
 [issue](https://github.com/NVIDIA/spark-rapids/issues/new/choose) for a bug or feature request. Ask
 or answer a question on the [discussion board](https://github.com/NVIDIA/spark-rapids/discussions).
