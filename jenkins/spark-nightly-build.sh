@@ -138,6 +138,8 @@ function build_shim() {
       SRC_DIR="${SHIM_M2DIR}/com/nvidia/${mod}/${ART_VER}"
       DEST_DIR="${M2DIR}/com/nvidia/${mod}/${ART_VER}"
 
+      ls -ltr ${SRC_DIR} ${DEST_DIR}
+
       if [[ -d "$SRC_DIR" ]]; then
         mkdir -p "$DEST_DIR"
         rsync -av --checksum --ignore-existing "${SRC_DIR}/" "${DEST_DIR}/"
