@@ -8,12 +8,13 @@ Contributions to RAPIDS Accelerator for Apache Spark fall into the following thr
     and triages issues, and schedules them for a release. If you believe the
     issue needs priority attention, please comment on the issue to notify the
     team.
-2. To propose and implement a new Feature, please file a new feature request
+   
+3. To propose and implement a new Feature, please file a new feature request
     [issue](https://github.com/NVIDIA/spark-rapids/issues/new/choose). Describe the
     intended feature and discuss the design and implementation with the team and
     community. Once the team agrees that the plan looks good, go ahead and
     implement it using the [code contributions](#code-contributions) guide below.
-3. To implement a feature or bug-fix for an existing outstanding issue, please
+4. To implement a feature or bug-fix for an existing outstanding issue, please
     follow the [code contributions](#code-contributions) guide below. If you
     need more context on a particular issue, please ask in a comment.
 
